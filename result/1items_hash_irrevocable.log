@@ -1,0 +1,148 @@
+Create a hash-based irrevocable view manager.
+===============================================
+Create 14 views. 
+	Associate view manufacturer1 with txn IDs []
+	Generate a random password jgwh2t4. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view manufacturer2 with txn IDs []
+	Generate a random password 4vzyef. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view warehouse1 with txn IDs []
+	Generate a random password f3ido9. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view warehouse2 with txn IDs []
+	Generate a random password 4parg5. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view warehouse3 with txn IDs []
+	Generate a random password clhxvki. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view delivery1 with txn IDs []
+	Generate a random password 7jgrbj. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view delivery2 with txn IDs []
+	Generate a random password qki5fo. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop1 with txn IDs []
+	Generate a random password 8fupdx. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop2 with txn IDs []
+	Generate a random password on4upy6. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop3 with txn IDs []
+	Generate a random password v1ku5i. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop4 with txn IDs []
+	Generate a random password kwjgx9. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop5 with txn IDs []
+	Generate a random password jwroqlf. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop6 with txn IDs []
+	Generate a random password mayztsr. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+	Associate view shop7 with txn IDs []
+	Generate a random password 5zalxa. Use the password to encode each element of the view message.
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+===============================================
+A view owner prepares Txn 1(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Create a random salt i00veb2kl
+	Hash the confidential part into c0ffee491d56d9098a0aeb552a7c0d0594da57930915789d994fb4a598bb7d75 
+	Send a txn e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3 to invoke secretcontract with c0ffee491d56d9098a0aeb552a7c0d0594da57930915789d994fb4a598bb7d75 as the secret part. 
+View manufacturer2 is appended with txns [e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3]. 
+	Associate view manufacturer2 with txn IDs [ 'e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse1 is appended with txns [e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3]. 
+	Associate view warehouse1 with txn IDs [ 'e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+===============================================
+A view owner prepares Txn 2(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Create a random salt yr9tsnyqq
+	Hash the confidential part into dced466259ba113fc33596a79c5e57f921d4e267a9e45f430c05cb2766d78844 
+	Send a txn ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0 to invoke secretcontract with dced466259ba113fc33596a79c5e57f921d4e267a9e45f430c05cb2766d78844 as the secret part. 
+View manufacturer2 is appended with txns [ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0]. 
+	Associate view manufacturer2 with txn IDs [ 'ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse1 is appended with txns [ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0]. 
+	Associate view warehouse1 with txn IDs [ 'ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View delivery2 is appended with txns [e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3,ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0]. 
+	Associate view delivery2 with txn IDs [
+  'e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3',
+  'ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0'
+]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+===============================================
+A view owner prepares Txn 3(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Create a random salt 5h9h7v696
+	Hash the confidential part into 8f5a3291a3525edd85a24784555f99b4800617c982cb853af2748fd04395818d 
+	Send a txn 0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869 to invoke secretcontract with 8f5a3291a3525edd85a24784555f99b4800617c982cb853af2748fd04395818d as the secret part. 
+View manufacturer2 is appended with txns [0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869]. 
+	Associate view manufacturer2 with txn IDs [ '0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse1 is appended with txns [0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869]. 
+	Associate view warehouse1 with txn IDs [ '0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View delivery2 is appended with txns [0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869]. 
+	Associate view delivery2 with txn IDs [ '0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse3 is appended with txns [e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3,ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0,0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869]. 
+	Associate view warehouse3 with txn IDs [
+  'e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3',
+  'ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0',
+  '0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869'
+]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+===============================================
+A view owner prepares Txn 4(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Create a random salt p0bhemhzm
+	Hash the confidential part into bfe54ff534197a517dad7a726d8955e638355ca2416faedf0258ba79b6302889 
+	Send a txn 63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace to invoke secretcontract with bfe54ff534197a517dad7a726d8955e638355ca2416faedf0258ba79b6302889 as the secret part. 
+View manufacturer2 is appended with txns [63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace]. 
+	Associate view manufacturer2 with txn IDs [ '63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse1 is appended with txns [63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace]. 
+	Associate view warehouse1 with txn IDs [ '63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View delivery2 is appended with txns [63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace]. 
+	Associate view delivery2 with txn IDs [ '63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View warehouse3 is appended with txns [63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace]. 
+	Associate view warehouse3 with txn IDs [ '63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace' ]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+View shop5 is appended with txns [e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3,ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0,0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869,63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace]. 
+	Associate view shop5 with txn IDs [
+  'e825336f6324072be459c4378735520ee42245992b4491adf5fe0e68e6be87c3',
+  'ea9caf5539417985cc49eebfd749c93dfdcc7663e149db4aa7555b6d273f9fc0',
+  '0be84da5fedbde219ed426ec5a9e4561595ebffee894f5a32e00278bdede9869',
+  '63673fc39172d118273a4b7ad130406d209646b033d5b395e3075867a7967ace'
+]
+	Associate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg 
+	Upload the encoded to a dedicated view_storage contract in blockchains, with the association to the view name. 
+Total Duration (ms): 9204. # of invocations: 24

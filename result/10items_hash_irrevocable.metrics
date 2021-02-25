@@ -1,0 +1,36 @@
+{
+  "avg_blk_info": {
+    "blk_size(bytes)": 24078, 
+    "state_size(bytes)": 7671, 
+    "txn_count": 3
+  }, 
+  "raw_thruput(tps)": {
+    "receive": 1.2874403754176134, 
+    "finish": 1.287398939183274
+  }, 
+  "latency(ms)": {
+    "breakdown": {
+      "buffer": 1, 
+      "process": {
+        "total": 140, 
+        "detail": {
+          "commit": {
+            "total": 139, 
+            "detail": {
+              "state_check": 11, 
+              "blk_commit": 75, 
+              "state_commit": 28
+            }
+          }, 
+          "txn_verification": 0
+        }
+      }
+    }, 
+    "e2e": 141, 
+    "blkcount": 52, 
+    "finish_interval": 3046, 
+    "receive_interval": 3046
+  }, 
+  "effective_thruput": 1.287398939183274, 
+  "valid_txn_ratio": 1.0
+}

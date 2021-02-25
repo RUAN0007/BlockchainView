@@ -1,0 +1,25 @@
+Invoke Txn (tid=1) under 2 chains. 
+Invoke Txn (tid=2) under 2 chains. 
+Invoke Txn (tid=3) under 4 chains. 
+Invoke Txn (tid=4) under 2 chains. 
+Invoke Txn (tid=5) under 4 chains. 
+Invoke Txn (tid=6) under 6 chains. 
+Invoke Txn (tid=7) under 8 chains. 
+Invoke Txn (tid=8) under 4 chains. 
+Invoke Txn (tid=9) under 6 chains. 
+Invoke Txn (tid=10) under 2 chains. 
+Invoke Txn (tid=11) under 6 chains. 
+Invoke Txn (tid=12) under 2 chains. 
+Invoke Txn (tid=13) under 4 chains. 
+Invoke Txn (tid=14) under 4 chains. 
+Invoke Txn (tid=15) under 2 chains. 
+Invoke Txn (tid=16) under 8 chains. 
+Invoke Txn (tid=17) under 6 chains. 
+Invoke Txn (tid=18) under 6 chains. 
+Invoke Txn (tid=19) under 8 chains. 
+Invoke Txn (tid=20) under 4 chains. 
+Invoke Txn (tid=21) under 8 chains. 
+Invoke Txn (tid=22) under 8 chains. 
+Invoke Txn (tid=23) under 6 chains. 
+Invoke Txn (tid=24) under 8 chains. 
+Total Duration for cross-chain invocation on ledgers (ms):  110630 # of invocations:  264

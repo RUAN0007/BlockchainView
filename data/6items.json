@@ -1,0 +1,716 @@
+{
+    "operations": [
+        {
+            "from": "manufacturer1", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 1, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 1, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 1, 
+            "tid": 1, 
+            "op": "insert"
+        }, 
+        {
+            "from": "manufacturer1", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 2, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 2, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 5, 
+            "tid": 2, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery2", 
+            "views": [
+                {
+                    "tid": 3, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 3, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 1, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 3, 
+                    "name": "delivery2"
+                }
+            ], 
+            "item": 1, 
+            "tid": 3, 
+            "op": "insert"
+        }, 
+        {
+            "from": "manufacturer2", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 4, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 4, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 4, 
+            "tid": 4, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery1", 
+            "views": [
+                {
+                    "tid": 5, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 5, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 4, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 5, 
+                    "name": "delivery1"
+                }
+            ], 
+            "item": 4, 
+            "tid": 5, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery2", 
+            "to": "warehouse3", 
+            "views": [
+                {
+                    "tid": 6, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 6, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 6, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 1, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 3, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 6, 
+                    "name": "warehouse3"
+                }
+            ], 
+            "item": 1, 
+            "tid": 6, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse3", 
+            "to": "shop7", 
+            "views": [
+                {
+                    "tid": 7, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 7, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 7, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 7, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 1, 
+                    "name": "shop7"
+                }, 
+                {
+                    "tid": 3, 
+                    "name": "shop7"
+                }, 
+                {
+                    "tid": 6, 
+                    "name": "shop7"
+                }, 
+                {
+                    "tid": 7, 
+                    "name": "shop7"
+                }
+            ], 
+            "item": 1, 
+            "tid": 7, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery2", 
+            "views": [
+                {
+                    "tid": 8, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 8, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 2, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 8, 
+                    "name": "delivery2"
+                }
+            ], 
+            "item": 5, 
+            "tid": 8, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery1", 
+            "to": "warehouse2", 
+            "views": [
+                {
+                    "tid": 9, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 9, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 9, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 4, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 5, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 9, 
+                    "name": "warehouse2"
+                }
+            ], 
+            "item": 4, 
+            "tid": 9, 
+            "op": "insert"
+        }, 
+        {
+            "from": "manufacturer2", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 10, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 10, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 0, 
+            "tid": 10, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery2", 
+            "to": "warehouse3", 
+            "views": [
+                {
+                    "tid": 11, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 11, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 11, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 2, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 8, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 11, 
+                    "name": "warehouse3"
+                }
+            ], 
+            "item": 5, 
+            "tid": 11, 
+            "op": "insert"
+        }, 
+        {
+            "from": "manufacturer2", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 12, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 12, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 3, 
+            "tid": 12, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery1", 
+            "views": [
+                {
+                    "tid": 13, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 13, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 10, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 13, 
+                    "name": "delivery1"
+                }
+            ], 
+            "item": 0, 
+            "tid": 13, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery2", 
+            "views": [
+                {
+                    "tid": 14, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 14, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 12, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 14, 
+                    "name": "delivery2"
+                }
+            ], 
+            "item": 3, 
+            "tid": 14, 
+            "op": "insert"
+        }, 
+        {
+            "from": "manufacturer1", 
+            "to": "warehouse1", 
+            "views": [
+                {
+                    "tid": 15, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 15, 
+                    "name": "warehouse1"
+                }
+            ], 
+            "item": 2, 
+            "tid": 15, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse3", 
+            "to": "shop6", 
+            "views": [
+                {
+                    "tid": 16, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 16, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 16, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 16, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 2, 
+                    "name": "shop6"
+                }, 
+                {
+                    "tid": 8, 
+                    "name": "shop6"
+                }, 
+                {
+                    "tid": 11, 
+                    "name": "shop6"
+                }, 
+                {
+                    "tid": 16, 
+                    "name": "shop6"
+                }
+            ], 
+            "item": 5, 
+            "tid": 16, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery2", 
+            "to": "warehouse3", 
+            "views": [
+                {
+                    "tid": 17, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 17, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 17, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 12, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 14, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 17, 
+                    "name": "warehouse3"
+                }
+            ], 
+            "item": 3, 
+            "tid": 17, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery1", 
+            "to": "warehouse2", 
+            "views": [
+                {
+                    "tid": 18, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 18, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 18, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 10, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 13, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 18, 
+                    "name": "warehouse2"
+                }
+            ], 
+            "item": 0, 
+            "tid": 18, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse3", 
+            "to": "shop5", 
+            "views": [
+                {
+                    "tid": 19, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 19, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 19, 
+                    "name": "delivery2"
+                }, 
+                {
+                    "tid": 19, 
+                    "name": "warehouse3"
+                }, 
+                {
+                    "tid": 12, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 14, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 17, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 19, 
+                    "name": "shop5"
+                }
+            ], 
+            "item": 3, 
+            "tid": 19, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse1", 
+            "to": "delivery1", 
+            "views": [
+                {
+                    "tid": 20, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 20, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 15, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 20, 
+                    "name": "delivery1"
+                }
+            ], 
+            "item": 2, 
+            "tid": 20, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse2", 
+            "to": "shop5", 
+            "views": [
+                {
+                    "tid": 21, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 21, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 21, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 21, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 10, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 13, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 18, 
+                    "name": "shop5"
+                }, 
+                {
+                    "tid": 21, 
+                    "name": "shop5"
+                }
+            ], 
+            "item": 0, 
+            "tid": 21, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse2", 
+            "to": "shop3", 
+            "views": [
+                {
+                    "tid": 22, 
+                    "name": "manufacturer2"
+                }, 
+                {
+                    "tid": 22, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 22, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 22, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 4, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 5, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 9, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 22, 
+                    "name": "shop3"
+                }
+            ], 
+            "item": 4, 
+            "tid": 22, 
+            "op": "insert"
+        }, 
+        {
+            "from": "delivery1", 
+            "to": "warehouse2", 
+            "views": [
+                {
+                    "tid": 23, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 23, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 23, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 15, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 20, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 23, 
+                    "name": "warehouse2"
+                }
+            ], 
+            "item": 2, 
+            "tid": 23, 
+            "op": "insert"
+        }, 
+        {
+            "from": "warehouse2", 
+            "to": "shop3", 
+            "views": [
+                {
+                    "tid": 24, 
+                    "name": "manufacturer1"
+                }, 
+                {
+                    "tid": 24, 
+                    "name": "warehouse1"
+                }, 
+                {
+                    "tid": 24, 
+                    "name": "delivery1"
+                }, 
+                {
+                    "tid": 24, 
+                    "name": "warehouse2"
+                }, 
+                {
+                    "tid": 15, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 20, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 23, 
+                    "name": "shop3"
+                }, 
+                {
+                    "tid": 24, 
+                    "name": "shop3"
+                }
+            ], 
+            "item": 2, 
+            "tid": 24, 
+            "op": "insert"
+        }
+    ], 
+    "views": [
+        "manufacturer1", 
+        "manufacturer2", 
+        "warehouse1", 
+        "warehouse2", 
+        "warehouse3", 
+        "delivery1", 
+        "delivery2", 
+        "shop1", 
+        "shop2", 
+        "shop3", 
+        "shop4", 
+        "shop5", 
+        "shop6", 
+        "shop7"
+    ]
+}

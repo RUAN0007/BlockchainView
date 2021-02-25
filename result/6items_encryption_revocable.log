@@ -1,0 +1,378 @@
+Create a encryption-based revocable view manager.
+===============================================
+Create 14 views. 
+	Associate view manufacturer1 with txn IDs []
+	Associate view manufacturer2 with txn IDs []
+	Associate view warehouse1 with txn IDs []
+	Associate view warehouse2 with txn IDs []
+	Associate view warehouse3 with txn IDs []
+	Associate view delivery1 with txn IDs []
+	Associate view delivery2 with txn IDs []
+	Associate view shop1 with txn IDs []
+	Associate view shop2 with txn IDs []
+	Associate view shop3 with txn IDs []
+	Associate view shop4 with txn IDs []
+	Associate view shop5 with txn IDs []
+	Associate view shop6 with txn IDs []
+	Associate view shop7 with txn IDs []
+===============================================
+A view owner prepares Txn 1(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key ywdj2pe for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into 9Bw+qM/fAh3QACHVgTVPtQ==
+	Send a txn c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b to invoke secretcontract with the encoded as the secret part 9Bw+qM/fAh3QACHVgTVPtQ==. 
+View manufacturer1 is appended with txns [c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b]. 
+	Append view manufacturer1 with txn IDs [ 'c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b' ]
+View warehouse1 is appended with txns [c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b]. 
+	Append view warehouse1 with txn IDs [ 'c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b' ]
+===============================================
+A view owner prepares Txn 2(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key w666wbb for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into RKq5OoPIjhyNkrNHrkhjGA==
+	Send a txn 505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5 to invoke secretcontract with the encoded as the secret part RKq5OoPIjhyNkrNHrkhjGA==. 
+View manufacturer1 is appended with txns [505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5]. 
+	Append view manufacturer1 with txn IDs [ '505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5' ]
+View warehouse1 is appended with txns [505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5]. 
+	Append view warehouse1 with txn IDs [ '505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5' ]
+===============================================
+A view owner prepares Txn 3(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key ussrmeb for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into FKRU0c+31FKZ3DH1tVzlMg==
+	Send a txn 226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2 to invoke secretcontract with the encoded as the secret part FKRU0c+31FKZ3DH1tVzlMg==. 
+View manufacturer1 is appended with txns [226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2]. 
+	Append view manufacturer1 with txn IDs [ '226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2' ]
+View warehouse1 is appended with txns [226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2]. 
+	Append view warehouse1 with txn IDs [ '226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2' ]
+View delivery2 is appended with txns [c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b,226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2]. 
+	Append view delivery2 with txn IDs [
+  'c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b',
+  '226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2'
+]
+===============================================
+A view owner prepares Txn 4(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 3l8wz7 for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into z66uFpI8JRbbsUKUKH1YOg==
+	Send a txn a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41 to invoke secretcontract with the encoded as the secret part z66uFpI8JRbbsUKUKH1YOg==. 
+View manufacturer2 is appended with txns [a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41]. 
+	Append view manufacturer2 with txn IDs [ 'a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41' ]
+View warehouse1 is appended with txns [a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41]. 
+	Append view warehouse1 with txn IDs [ 'a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41' ]
+===============================================
+A view owner prepares Txn 5(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 0o3edhk for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into iHza5CbWLzNnFIMfcpstiw==
+	Send a txn 3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8 to invoke secretcontract with the encoded as the secret part iHza5CbWLzNnFIMfcpstiw==. 
+View manufacturer2 is appended with txns [3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8]. 
+	Append view manufacturer2 with txn IDs [ '3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8' ]
+View warehouse1 is appended with txns [3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8]. 
+	Append view warehouse1 with txn IDs [ '3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8' ]
+View delivery1 is appended with txns [a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41,3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8]. 
+	Append view delivery1 with txn IDs [
+  'a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41',
+  '3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8'
+]
+===============================================
+A view owner prepares Txn 6(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 7qyo13i for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into BvQ+YJPfYDPQLBdAPgEg9g==
+	Send a txn 00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4 to invoke secretcontract with the encoded as the secret part BvQ+YJPfYDPQLBdAPgEg9g==. 
+View manufacturer1 is appended with txns [00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4]. 
+	Append view manufacturer1 with txn IDs [ '00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4' ]
+View warehouse1 is appended with txns [00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4]. 
+	Append view warehouse1 with txn IDs [ '00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4' ]
+View delivery2 is appended with txns [00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4]. 
+	Append view delivery2 with txn IDs [ '00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4' ]
+View warehouse3 is appended with txns [c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b,226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2,00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4]. 
+	Append view warehouse3 with txn IDs [
+  'c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b',
+  '226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2',
+  '00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4'
+]
+===============================================
+A view owner prepares Txn 7(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 34zdhr for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into 9k0OlbFePcmMvQRKddF0Zg==
+	Send a txn c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801 to invoke secretcontract with the encoded as the secret part 9k0OlbFePcmMvQRKddF0Zg==. 
+View manufacturer1 is appended with txns [c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801]. 
+	Append view manufacturer1 with txn IDs [ 'c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801' ]
+View warehouse1 is appended with txns [c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801]. 
+	Append view warehouse1 with txn IDs [ 'c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801' ]
+View delivery2 is appended with txns [c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801]. 
+	Append view delivery2 with txn IDs [ 'c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801' ]
+View warehouse3 is appended with txns [c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801]. 
+	Append view warehouse3 with txn IDs [ 'c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801' ]
+View shop7 is appended with txns [c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b,226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2,00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4,c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801]. 
+	Append view shop7 with txn IDs [
+  'c84f1395fc1852200dde1ea6cb75a7cd2e67a756762766222f3644542079a18b',
+  '226b0de2d86218f6ac7921eeea0fd3aafef9c71e93aae0e469e12ddb6e7322b2',
+  '00be329b2f40cfc0ba1be116010344904959a570beb634a7f7b3d1af7a89aba4',
+  'c28c5478aa8637f76fa9bd1fbd7607c0917479aab9947c040cf10071a5e26801'
+]
+===============================================
+A view owner prepares Txn 8(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key sq9obgn for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into v5dV21g0gR8TrK22WD7XoQ==
+	Send a txn 9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8 to invoke secretcontract with the encoded as the secret part v5dV21g0gR8TrK22WD7XoQ==. 
+View manufacturer1 is appended with txns [9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8]. 
+	Append view manufacturer1 with txn IDs [ '9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8' ]
+View warehouse1 is appended with txns [9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8]. 
+	Append view warehouse1 with txn IDs [ '9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8' ]
+View delivery2 is appended with txns [505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5,9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8]. 
+	Append view delivery2 with txn IDs [
+  '505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5',
+  '9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8'
+]
+===============================================
+A view owner prepares Txn 9(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 46f6mu for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into qoFG7cZSoilhNF1m8JLx5A==
+	Send a txn 3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a to invoke secretcontract with the encoded as the secret part qoFG7cZSoilhNF1m8JLx5A==. 
+View manufacturer2 is appended with txns [3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a]. 
+	Append view manufacturer2 with txn IDs [ '3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a' ]
+View warehouse1 is appended with txns [3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a]. 
+	Append view warehouse1 with txn IDs [ '3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a' ]
+View delivery1 is appended with txns [3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a]. 
+	Append view delivery1 with txn IDs [ '3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a' ]
+View warehouse2 is appended with txns [a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41,3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8,3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a]. 
+	Append view warehouse2 with txn IDs [
+  'a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41',
+  '3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8',
+  '3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a'
+]
+===============================================
+A view owner prepares Txn 10(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key nn3mr3 for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into rLNKo4Bd0EgwlN7OMjpNHw==
+	Send a txn 17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d to invoke secretcontract with the encoded as the secret part rLNKo4Bd0EgwlN7OMjpNHw==. 
+View manufacturer2 is appended with txns [17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d]. 
+	Append view manufacturer2 with txn IDs [ '17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d' ]
+View warehouse1 is appended with txns [17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d]. 
+	Append view warehouse1 with txn IDs [ '17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d' ]
+===============================================
+A view owner prepares Txn 11(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key x7bcto for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into QPuhwWSEuARbUSEv5YpIUQ==
+	Send a txn 196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e to invoke secretcontract with the encoded as the secret part QPuhwWSEuARbUSEv5YpIUQ==. 
+View manufacturer1 is appended with txns [196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e]. 
+	Append view manufacturer1 with txn IDs [ '196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e' ]
+View warehouse1 is appended with txns [196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e]. 
+	Append view warehouse1 with txn IDs [ '196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e' ]
+View delivery2 is appended with txns [196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e]. 
+	Append view delivery2 with txn IDs [ '196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e' ]
+View warehouse3 is appended with txns [505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5,9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8,196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e]. 
+	Append view warehouse3 with txn IDs [
+  '505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5',
+  '9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8',
+  '196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e'
+]
+===============================================
+A view owner prepares Txn 12(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key d29fvb for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into awI+/UVDY6cGSIVmmueQhA==
+	Send a txn 8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0 to invoke secretcontract with the encoded as the secret part awI+/UVDY6cGSIVmmueQhA==. 
+View manufacturer2 is appended with txns [8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0]. 
+	Append view manufacturer2 with txn IDs [ '8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0' ]
+View warehouse1 is appended with txns [8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0]. 
+	Append view warehouse1 with txn IDs [ '8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0' ]
+===============================================
+A view owner prepares Txn 13(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key o49ty9 for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into +6Q1mZdetOcLG/AQJ3CF0w==
+	Send a txn f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913 to invoke secretcontract with the encoded as the secret part +6Q1mZdetOcLG/AQJ3CF0w==. 
+View manufacturer2 is appended with txns [f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913]. 
+	Append view manufacturer2 with txn IDs [ 'f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913' ]
+View warehouse1 is appended with txns [f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913]. 
+	Append view warehouse1 with txn IDs [ 'f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913' ]
+View delivery1 is appended with txns [17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d,f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913]. 
+	Append view delivery1 with txn IDs [
+  '17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d',
+  'f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913'
+]
+===============================================
+A view owner prepares Txn 14(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 08ajbkc for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into x6q7DGKz9B0lcIgAkTJCaw==
+	Send a txn cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd to invoke secretcontract with the encoded as the secret part x6q7DGKz9B0lcIgAkTJCaw==. 
+View manufacturer2 is appended with txns [cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd]. 
+	Append view manufacturer2 with txn IDs [ 'cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd' ]
+View warehouse1 is appended with txns [cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd]. 
+	Append view warehouse1 with txn IDs [ 'cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd' ]
+View delivery2 is appended with txns [8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0,cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd]. 
+	Append view delivery2 with txn IDs [
+  '8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0',
+  'cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd'
+]
+===============================================
+A view owner prepares Txn 15(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 9tih9f for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into zCZ4Cd+edF3Y+fS+nct2tw==
+	Send a txn 533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451 to invoke secretcontract with the encoded as the secret part zCZ4Cd+edF3Y+fS+nct2tw==. 
+View manufacturer1 is appended with txns [533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451]. 
+	Append view manufacturer1 with txn IDs [ '533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451' ]
+View warehouse1 is appended with txns [533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451]. 
+	Append view warehouse1 with txn IDs [ '533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451' ]
+===============================================
+A view owner prepares Txn 16(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key qlnprmk for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into z27dbjILX8TPyREBRrlxoQ==
+	Send a txn 36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c to invoke secretcontract with the encoded as the secret part z27dbjILX8TPyREBRrlxoQ==. 
+View manufacturer1 is appended with txns [36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c]. 
+	Append view manufacturer1 with txn IDs [ '36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c' ]
+View warehouse1 is appended with txns [36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c]. 
+	Append view warehouse1 with txn IDs [ '36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c' ]
+View delivery2 is appended with txns [36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c]. 
+	Append view delivery2 with txn IDs [ '36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c' ]
+View warehouse3 is appended with txns [36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c]. 
+	Append view warehouse3 with txn IDs [ '36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c' ]
+View shop6 is appended with txns [505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5,9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8,196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e,36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c]. 
+	Append view shop6 with txn IDs [
+  '505faddb0eb289a76f568db7de083ad2fc9387871848c63c044fe8e9f8b32fd5',
+  '9ea500ef2fa8a9a984905a678ae22aaa133dc71473e98d0160f325d13b421fd8',
+  '196d12679ac0b6fb3e37f6d285b3dce80ac43c27bb1edef7c359f12d7f19966e',
+  '36909f57267c023adf91c8654bc9553d332a0400eb31b28302bff3ee06ebb55c'
+]
+===============================================
+A view owner prepares Txn 17(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 56gohplj for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into +AtLGjp0y+NBMH9QpFOXGA==
+	Send a txn ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e to invoke secretcontract with the encoded as the secret part +AtLGjp0y+NBMH9QpFOXGA==. 
+View manufacturer2 is appended with txns [ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e]. 
+	Append view manufacturer2 with txn IDs [ 'ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e' ]
+View warehouse1 is appended with txns [ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e]. 
+	Append view warehouse1 with txn IDs [ 'ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e' ]
+View delivery2 is appended with txns [ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e]. 
+	Append view delivery2 with txn IDs [ 'ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e' ]
+View warehouse3 is appended with txns [8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0,cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd,ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e]. 
+	Append view warehouse3 with txn IDs [
+  '8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0',
+  'cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd',
+  'ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e'
+]
+===============================================
+A view owner prepares Txn 18(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 5g52t7e for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into xGCpahszPfA/lNd6oxfLcg==
+	Send a txn 9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f to invoke secretcontract with the encoded as the secret part xGCpahszPfA/lNd6oxfLcg==. 
+View manufacturer2 is appended with txns [9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f]. 
+	Append view manufacturer2 with txn IDs [ '9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f' ]
+View warehouse1 is appended with txns [9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f]. 
+	Append view warehouse1 with txn IDs [ '9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f' ]
+View delivery1 is appended with txns [9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f]. 
+	Append view delivery1 with txn IDs [ '9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f' ]
+View warehouse2 is appended with txns [17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d,f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913,9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f]. 
+	Append view warehouse2 with txn IDs [
+  '17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d',
+  'f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913',
+  '9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f'
+]
+===============================================
+A view owner prepares Txn 19(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key tcnf4l for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into n4BJleEVtsJWSFe+Mbalow==
+	Send a txn 6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113 to invoke secretcontract with the encoded as the secret part n4BJleEVtsJWSFe+Mbalow==. 
+View manufacturer2 is appended with txns [6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113]. 
+	Append view manufacturer2 with txn IDs [ '6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113' ]
+View warehouse1 is appended with txns [6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113]. 
+	Append view warehouse1 with txn IDs [ '6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113' ]
+View delivery2 is appended with txns [6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113]. 
+	Append view delivery2 with txn IDs [ '6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113' ]
+View warehouse3 is appended with txns [6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113]. 
+	Append view warehouse3 with txn IDs [ '6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113' ]
+View shop5 is appended with txns [8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0,cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd,ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e,6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113]. 
+	Append view shop5 with txn IDs [
+  '8809fecf01e432ef7056518ac7019d01944b75f7ad509276452b77a5fc18cde0',
+  'cfad15e311682bc733a724fbd9ebc6b7f78abce1818689b895b1fdfacb5b25cd',
+  'ed2cf4c9b9a9d5d4753e44c04089ea0ae1d79f8777abaf16fff21fd97e4e638e',
+  '6a8664f5ded060d0ad94569870df7e1069c7b6c66b96d7e1885bcc00d03a8113'
+]
+===============================================
+A view owner prepares Txn 20(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 2hlgvn for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into ozHwp/Kj7DheY1hSgnGIRg==
+	Send a txn 7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1 to invoke secretcontract with the encoded as the secret part ozHwp/Kj7DheY1hSgnGIRg==. 
+View manufacturer1 is appended with txns [7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1]. 
+	Append view manufacturer1 with txn IDs [ '7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1' ]
+View warehouse1 is appended with txns [7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1]. 
+	Append view warehouse1 with txn IDs [ '7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1' ]
+View delivery1 is appended with txns [533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451,7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1]. 
+	Append view delivery1 with txn IDs [
+  '533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451',
+  '7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1'
+]
+===============================================
+A view owner prepares Txn 21(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 87tfj5o for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into b4zlmV65bRiGfY92WxLRVA==
+	Send a txn 03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe to invoke secretcontract with the encoded as the secret part b4zlmV65bRiGfY92WxLRVA==. 
+View manufacturer2 is appended with txns [03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe]. 
+	Append view manufacturer2 with txn IDs [ '03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe' ]
+View warehouse1 is appended with txns [03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe]. 
+	Append view warehouse1 with txn IDs [ '03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe' ]
+View delivery1 is appended with txns [03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe]. 
+	Append view delivery1 with txn IDs [ '03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe' ]
+View warehouse2 is appended with txns [03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe]. 
+	Append view warehouse2 with txn IDs [ '03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe' ]
+View shop5 is appended with txns [17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d,f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913,9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f,03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe]. 
+	Append view shop5 with txn IDs [
+  '17c0cb5273dacdd59c05398085fc777525915344e38c403f1365524914b8ff0d',
+  'f0e22624e13d3d26b6f6e304a51c3224e264e93c2ec4a35ce844d0b6679d7913',
+  '9da2026c52dc1d9bc3f4e9be113d205d66520d9869dc3fea55070603cc3c678f',
+  '03e0d6fafaebe79d51026af5c4321878320748ef39b48c20f71e84bf751dadbe'
+]
+===============================================
+A view owner prepares Txn 22(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key lwsq74 for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into AlhCynCTYA8rMrDIgO2Lmg==
+	Send a txn 1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15 to invoke secretcontract with the encoded as the secret part AlhCynCTYA8rMrDIgO2Lmg==. 
+View manufacturer2 is appended with txns [1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15]. 
+	Append view manufacturer2 with txn IDs [ '1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15' ]
+View warehouse1 is appended with txns [1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15]. 
+	Append view warehouse1 with txn IDs [ '1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15' ]
+View delivery1 is appended with txns [1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15]. 
+	Append view delivery1 with txn IDs [ '1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15' ]
+View warehouse2 is appended with txns [1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15]. 
+	Append view warehouse2 with txn IDs [ '1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15' ]
+View shop3 is appended with txns [a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41,3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8,3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a,1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15]. 
+	Append view shop3 with txn IDs [
+  'a6f46ee442cb4feeb4f8278e4ff78f758f56f1a568f32ce7884c1b4b12f5fb41',
+  '3d99186e291b9898528ec9ed5b9ec3e9024118facf70f99d7ebb20076b72c2f8',
+  '3b4f1f00b442f42dd96d244b4a380501b5bb60dfb5d58310eba45d2eec06038a',
+  '1360e1fd48dbc543e3c851c2922b52976d531e63bf90f504383f87726b35dd15'
+]
+===============================================
+A view owner prepares Txn 23(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key 1i5ie1 for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into eTUS1dxfdVSLkhJSYnUO1w==
+	Send a txn 5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6 to invoke secretcontract with the encoded as the secret part eTUS1dxfdVSLkhJSYnUO1w==. 
+View manufacturer1 is appended with txns [5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6]. 
+	Append view manufacturer1 with txn IDs [ '5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6' ]
+View warehouse1 is appended with txns [5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6]. 
+	Append view warehouse1 with txn IDs [ '5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6' ]
+View delivery1 is appended with txns [5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6]. 
+	Append view delivery1 with txn IDs [ '5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6' ]
+View warehouse2 is appended with txns [533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451,7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1,5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6]. 
+	Append view warehouse2 with txn IDs [
+  '533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451',
+  '7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1',
+  '5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6'
+]
+===============================================
+A view owner prepares Txn 24(tid) to invoke Contract secretcontract with confidential part SECRET_PAYLOAD
+	Generate a random key b90wyn for this txn
+	Use the key to encode the confidential part SECRET_PAYLOAD into VD1E51gxJkF5HBs2XATOqw==
+	Send a txn 944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed to invoke secretcontract with the encoded as the secret part VD1E51gxJkF5HBs2XATOqw==. 
+View manufacturer1 is appended with txns [944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed]. 
+	Append view manufacturer1 with txn IDs [ '944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed' ]
+View warehouse1 is appended with txns [944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed]. 
+	Append view warehouse1 with txn IDs [ '944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed' ]
+View delivery1 is appended with txns [944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed]. 
+	Append view delivery1 with txn IDs [ '944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed' ]
+View warehouse2 is appended with txns [944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed]. 
+	Append view warehouse2 with txn IDs [ '944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed' ]
+View shop3 is appended with txns [533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451,7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1,5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6,944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed]. 
+	Append view shop3 with txn IDs [
+  '533815296639a31ed1882cacb0eaf8c4fbc10c16f1f04f8214fcbd04d5b30451',
+  '7e4f97d7fe44d02cf2d35c5f4eb2c0efd1c3804d348274ca3d70746e1dcf07f1',
+  '5aeaed6f8e7ba51bfcc17a695dbc551cf0322b6b586c06aa3fcab4ad314ba7c6',
+  '944c2e3f01da8b3819237c85dc71cedc6df3874556c0f86b0d1920627fb63bed'
+]
+Total Duration (ms): 55989. # of invocations: 144
