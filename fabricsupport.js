@@ -156,3 +156,133 @@ class FabricSupport {
 }
 
 module.exports.FabricSupport = FabricSupport;
+
+
+class NewFabricSupport {
+    constructor(args) {
+        var network_dir  = args.network_dir;
+        var org_id = args.org_id;
+        this.channel_name = args.channel_name;
+
+        const profile_path = path.resolve(network_dir, "crypto_config", "peerOrganizations", `org${org_id}.example.com`, "connection_profile.json");
+        const connection_profile = JSON.parse(fs.readFileSync(profile_path, 'utf8'));
+
+        // Check to see if we've already enrolled the user.
+        const cert_path = path.join(network_dir, "crypto_config", "peerOrganizations", `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "signcerts", `Admin@org${org_id}.example.com-cert.pem`);
+        const key_path = path.join(network_dir, "crypto_config", "peerOrganizations", `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "keystore", "priv_sk");
+
+        const x509Identity = {
+            credentials: {
+                certificate: fs.readFileSync(cert_path).toString(),
+                privateKey: fs.readFileSync(key_path).toString(),
+            },
+            mspId: `Org${org_id}MSP`,
+            type: 'X.509',
+        };        
+
+        // Wait for the peer in the org commits this transaction
+        let op = DefaultEventHandlerStrategies.MSPID_SCOPE_ALLFORTX;
+        const gateway_option = {
+            identity:x509Identity ,
+            discovery: { enabled: true, asLocalhost: false},
+            eventHandlerOptions: {
+                strategy: op 
+            }  
+        };
+
+        this.connection_profile = connection_profile;
+        this.gateway_option = gateway_option;
+
+        this.txID2Data = {};
+    }
+
+    async InitNetwork() {
+        const gateway = new Gateway();
+        await gateway.connect(this.connection_profile, this.gateway_option);
+        this.network = await gateway.getNetwork(this.channel_name);
+
+        // Register a block listener
+        const listener = async (event) => {
+            try {
+                var height = Number(event.blockNumber) + 1;
+                const blkNum = "" + event.blockNumber; //conver to str
+                const block = event.blockData;
+                let tx_filters = block.metadata.metadata[2]
+                for (var index = 0; index < block.data.data.length; index++) {
+                    var channel_header = block.data.data[index].payload.header.channel_header;
+                    // 3 implies for the normal contract-invoking txn, based on https://hyperledger.github.io/fabric-chaincode-node/release-2.2/api/fabric-shim.ChannelHeader.html
+                    // The check on tx_filters indicates the txn is valid
+                    var validTxCount = 0;
+                    if (channel_header.type === 3 && tx_filters[index] === 0) {
+                        this.txID2Data[channel_header.tx_id] = block.data.data[index].payload.data;
+                        validTxCount++;
+                    }
+                }
+                // console.log(`Block ${blkNum} has ${validTxCount} txns. `);
+
+            } catch (error) {
+                console.error(`Failed to listen for blocks: ${error}`);
+            }
+        };
+        await this.network.addBlockListener(listener, {startBlock: 1});
+        return this;
+    }
+
+
+    GetSecretFromTxnId(txnId) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+    InvokeTxnWithSecret(ccId, secret) {
+        // Temporally hardcode the method name in secretcontract.go. 
+        var functionName = "InvokeTxn";
+        return this.SendTxn(ccId, functionName, ["11", secret]);
+    }
+
+    InvokeTxnWithSecretAsync(ccId, secret) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    CreateView(viewName, viewData) {
+        // console.log(`Create View ${viewName} with Data ${viewData}`);
+        // " < 10" is arbitrary. 
+        return this.SendTxn("onchainview", "CreateView", [viewName, " < 10"]).then(()=>{
+            return viewName;
+        });
+    }
+
+    // publicArgs: an array of strings
+    async SendTxn(ccId, functionName, publicArgs) {
+        const contract = this.network.getContract(ccId);
+        const txn = contract.createTransaction(functionName);
+        await txn.submit(...publicArgs);
+        const txnID = txn.getTransactionId();
+        return txnID;
+    }
+
+    AppendView(viewName, viewData) {
+        return viewName;
+    }
+
+
+    GetView(viewName) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    SendTxnAsync(ccId, functionName, publicArgs) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+    async Query(ccId, function_name, args) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+}
+
+module.exports.NewFabricSupport = NewFabricSupport;
