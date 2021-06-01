@@ -85,6 +85,9 @@ class EncryptionBasedView {
 
             return this.fabric_support.AppendView(viewName, msg).then(()=>{
                 return viewName;
+            }).catch(err =>{
+                // May raise MVCC conflict. Temporarily ignore. 
+                // console.log("MVCC Conflict")
             });
         } else {
             return viewName;

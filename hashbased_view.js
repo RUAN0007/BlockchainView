@@ -87,6 +87,8 @@ class HashBasedView {
 
             return this.fabric_support.AppendView(viewName, msg).then(()=>{
                 return viewName;
+            }).catch(err=>{
+                // Ignore potential MVCC conflicts here
             });
         } else {
             return viewName;

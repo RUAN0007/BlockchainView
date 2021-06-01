@@ -17,7 +17,7 @@ set -o pipefail
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- "${0}")"
 
 declare -gr CHANNEL="viewchannel";
-declare -gr NETWORK_DIR="viewnetwork";
+declare -gr NETWORK_DIR="viewnetwork2";
 declare -gr PEER_COUNT=2;
 
 function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
@@ -55,37 +55,50 @@ function end() {
 function runExp() {
     local -r node_count=$1
     local -r node_num=$2
-    local -r i=10
-    local -r file_path="data/${i}items.json" 
+    local -r workload_path="$3"
+    local -r client_count=$4
 
-    echo $"Run for ${i} items with cross-chain baseline, simulating on Node ${node_num} with ${node_count} nodes."
     start
-    node supply_chain_across_part.js "${file_path}" ${node_count} ${node_num}
+    echo $"Run for ${workload_path} with cross-chain baseline, simulating on Node ${node_num} with ${node_count} nodes and ${client_count} processes."
+    workload_base=$(basename ${workload_path} .json)
+    for i in $(seq ${client_count}); do
+        local log_path="result/${workload_base}_${node_count}nodes_node${node_num}_client${i}.log"
+        node supply_chain_across_part.js "${workload_path}" ${node_count} ${node_num} > ${log_path} 2>&1 &
+        echo "    Client${i} logs at ${log_path}"
+    done
+    echo "Wait for client procecces to finish. "
+    wait
+
     end
 
-    local -r result_path="result/${i}items_across_${node_count}nodes_${node_num}.metrics"
+    local -r result_path="result/${workload_base}_across_${node_count}nodes_${node_num}.metrics"
     echo "Dump results to ${result_path}"
     ssh slave-4 "python ${__SCRIPT_DIR}/measure_block.py 0" > "${result_path}"
+    cat ${result_path}
 }
 
 
 # The main function
 main() {
-    if [[ $# < 0 ]]; then 
-       echo "Insufficient arguments, expecting at least 0, actually $#" >&2 
-       echo "    Usage: storage_cross.sh" >&2 
+    if [[ $# < 2 ]]; then 
+       echo "Insufficient arguments, expecting at least 2, actually $#" >&2 
+       echo "    Usage: storage_cross.sh [workload_path] [client_count]" >&2 
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
-
     # for node_count in 1 4 7 14; do
-    for node_count in 4 7 14; do
-        last=$(($node_count-1))
-        for node_num in $(seq 0 1 ${last}); do
-            runExp ${node_count} ${node_num}
-            # echo $node_num
-        done
-        # echo ""
+    workload_path="$1"
+    process_count=$2
+    for node_count in 7 ; do
+        # last=$(($node_count-1))
+        # for node_num in $(seq 0 1 ${last}); do
+        #     runExp ${node_count} ${node_num} ${workload_path} ${process_count}
+        # done
+        echo ""
+        echo "Aggregate storges among multiple runs: "
+        # Must be identical to the above
+        workload_base=$(basename ${workload_path} .json)
+        python aggregate_storage.py ${workload_base} ${node_count}
     done
     # popd > /dev/null 2>&1
 }

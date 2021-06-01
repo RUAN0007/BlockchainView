@@ -31,6 +31,9 @@ var tid2TxnId = {};
 const ccName = "secretcontract";
 var app_txn_count = 0;
 var batch = 0;
+var batch_elasped_sum = 0;
+
+var logical2PhysicalViews = {};
 
 /////////////////////////////////////////////////////////////
 // Below are expected to execute at the U1 side, who invokes the transaction and creates the view. 
@@ -47,12 +50,28 @@ Promise.resolve().then(()=>{
     }
     var view_creation_promises = [];
     console.log("===============================================");
-    let viewCount = viewInfo["views"].length;
-    console.log("Create " + viewCount + " views. ");
-    for (var i = 0; i < viewCount; i++) {
-        var viewName = viewInfo["views"][i];
-        view_creation_promises.push(view_manager.CreateView(viewName, []));
+    var logicalViewCount = viewInfo["views"].length;
+    var physicalViewCount = logicalViewCount; 
+    if (process.argv[5] !== undefined) {
+        physicalViewCount = parseInt(process.argv[5]);
     }
+
+    console.log(`Create ${physicalViewCount} views for ${logicalViewCount} ones. `);
+    for (var i = 0; i < physicalViewCount; i++) {
+        // var viewName = viewInfo["views"][i];
+        view_creation_promises.push(view_manager.CreateView("PhysicalView"+i, []));
+    }
+
+
+    for (var i = 0; i < logicalViewCount; i++) {
+        var logicalViewName = viewInfo["views"][i];
+        var id = "" + i % physicalViewCount;
+        var physicalViewName =  "PhysicalView"+ id;
+        // Must be identical to the above physical view name
+        logical2PhysicalViews[logicalViewName] = physicalViewName;
+        console.log(`  Logical View ${logicalViewName} to PhysicalView ${physicalViewName}`);
+    }
+
     return Promise.all(view_creation_promises);
 
 }).then((viewNames)=>{
@@ -68,12 +87,12 @@ Promise.resolve().then(()=>{
         console.log(`Prepare to batch request ${operation_count} in batch ${batch}`);
         // userinput = readline.question(`\nCONTINUE?\n`);
 
+        var batch_start = new Date();
         var request_promises = [];
         for (var i = 0; i < operation_count; i++) {
             // console.log("===============================================");
             // console.log("A view owner prepares Txn " + operation["tid"] + "(tid) to invoke Contract " + ccName + " with confidential part " + confidentialPart);
             // invocationCount += 1;
-
             var req_promise = view_manager.InvokeTxn(ccName, confidentialPart, blkOps[i]).then((result)=>{
                 var txnID = result[0];
                 var operation = result[1];
@@ -81,18 +100,29 @@ Promise.resolve().then(()=>{
                 tid2TxnId[app_tid] = txnID;
                 console.log(`App Tid = ${app_tid} for txnID = ${txnID}`);
 
-                var numViews = operation["views"].length;
+                var logicalViewCount = operation["views"].length;
                 // invocationCount += numViews;
                 var view2Txns = {};
-                for (var ii = 0; ii < numViews; ii++) {
+                for (var ii = 0; ii < logicalViewCount; ii++) {
                     let tid = operation["views"][ii]["tid"];
                     let txnID = tid2TxnId[tid];
-                    let viewName = operation["views"][ii]["name"];
+                    let logicalViewName = operation["views"][ii]["name"];
+                    let physicalViewName = logical2PhysicalViews[logicalViewName];
+                    if (physicalViewName in view2Txns) {
+                        // view2Txns[physicalViewName].push(txnID);
+                        var exists = false;
+                        for (var j = 0; j < view2Txns[physicalViewName].length; j++) {
+                            if (view2Txns[physicalViewName][j] === txnID) {
+                                exists = true; 
+                                break
+                            }
+                        }
 
-                    if (viewName in view2Txns) {
-                        view2Txns[viewName].push(txnID);
+                        if (! exists) {
+                            view2Txns[physicalViewName].push(txnID);
+                        }
                     } else {
-                        view2Txns[viewName] = [txnID];
+                        view2Txns[physicalViewName] = [txnID];
                     }
 
                 }
@@ -100,16 +130,17 @@ Promise.resolve().then(()=>{
                 var view_append_promises = [];
                 for (var viewName in view2Txns) {
                     console.log(`View ${viewName} is appended with txns [${view2Txns[viewName]}]. `)
-                    view_append_promises.push(view_manager.AppendView(viewName, view2Txns[viewName]).catch(err =>{
-                        // May raise MVCC conflict. Temporarily ignore. 
-                        // console.log("MVCC Conflict")
-                    }));
+                    view_append_promises.push(view_manager.AppendView(viewName, view2Txns[viewName]));
                 }
+
                 return Promise.all(view_append_promises);
             });
             request_promises.push(req_promise);
         }
-        await Promise.all(request_promises);
+        await Promise.all(request_promises).then(()=>{
+            let batch_elapsed = new Date() - batch_start;
+            batch_elasped_sum += batch_elapsed;
+        });
 
     },  Promise.resolve());
 }).catch((err)=>{
@@ -117,7 +148,8 @@ Promise.resolve().then(()=>{
 })
 .finally(()=>{
     let elapsed = new Date() - start;
-    console.log(`Total Duration (ms): ${elapsed},  # of app txn:  ${app_txn_count}, # of batches ${batch}`);
+    let avg_batch_delay = Math.floor(batch_elasped_sum / batch);
+    console.log(`Total Duration (ms): ${elapsed} ,  # of app txn:  ${app_txn_count} , avg batch delay (ms): ${avg_batch_delay} # of batches ${batch}`);
     process.exit(0)
 })
 ;

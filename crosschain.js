@@ -58,7 +58,7 @@ class CrossChain {
 
 
     async CrossChainCommit(channels, txId, secret) {
-        console.log(`txId=${txId}, secret=${secret}`);
+        // console.log(`txId=${txId}, secret=${secret}`);
         var contracts = [];
         channels.forEach((channel_name)=>{
             if (channel_name in this.channel_info) {
