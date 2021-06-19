@@ -22,18 +22,24 @@ class EncryptionBasedView {
         this.viewKeys = {};
     }
 
-    InvokeTxn(ccId, confidentialPart, app_tid) { 
+    InvokeTxn(ccId, pub_args, confidentialPart, app_tid) { 
         var key = cmgr.CreateKey();
         console.log(util.format("\tGenerate a random key %s for this txn", key));
 
         var secretPayload = cmgr.Encrypt(key, confidentialPart); 
         console.log(util.format("\tUse the key to encode the confidential part %s into %s", confidentialPart, secretPayload));
 
-        return this.fabric_support.InvokeTxnWithSecret(ccId, secretPayload).then((txnId)=>{
+        return this.fabric_support.InvokeTxnWithSecret(ccId, pub_args, secretPayload).then((txnId)=>{
             this.txnKeys[txnId] = key;
             console.log(util.format("\tSend a txn %s to invoke %s with the encoded as the secret part %s. ", txnId, ccId, secretPayload))
-            return [txnId, app_tid];
-        });
+            return ["", txnId, app_tid];
+        })
+        .catch(error => {
+            // console.log(`Error with code ${error.transactionCode}`);
+            // probably due to MVCC
+            return [error.transactionCode, "", app_tid];
+        })
+        ;
     }
 
 

@@ -17,54 +17,61 @@ Promise.resolve().then(()=>{
     fabric_support = new fabricSupport.FabricSupport(initArgs);
     return fabric_support.InitNetwork();
 }).then((fabric_support)=>{
-    view_name = "lessthan10";
-    return fabric_support.SendTxn("onchainview", "CreateView", [view_name, "< 10"]);
+    view_name = "ViewA";
+    return fabric_support.SendTxn("onchainview", "CreateView", [view_name, "ViewA", "5"]);
 }).then(()=>{
     console.log(`Create view ${view_name}`);
     userinput = readline.question(`\nCONTINUE?\n`);
 
-    view_name = "greaterthan20"; // u1 
-    return fabric_support.SendTxn("onchainview", "CreateView", [view_name, "> 20"]);
+    view_name = "ViewB"; // u1 
+    return fabric_support.SendTxn("onchainview", "CreateView", [view_name, "ViewB", "5"]);
 }).then(()=>{
     console.log(`Create view ${view_name}`);
-    userinput = readline.question(`\nCONTINUE?\n`);
+    userinput = readline.question(`\nCONTINUE to invoke Txn?\n`);
 
-    pub_arg = "8";
+    pub_arg = "ViewA";
     return fabric_support.SendTxn("onchainview", "InvokeTxn", [pub_arg, fake_secret_data]); // t1
 }).then((txnId)=>{
     console.log(`Finish Txn ${txnId} with the public arg ${pub_arg}`);
 
-    userinput = readline.question(`\nCONTINUE?\n`);
-    pub_arg = "15"; // t2
-    return fabric_support.SendTxn("onchainview", "InvokeTxn", [pub_arg, fake_secret_data]);  // lessthan20->[t1, t2] lessthan10->[t1]
+    userinput = readline.question(`\nWait for > 5s to CONTINUE?\n`);
+    pub_arg = "ViewA"; // t2
+    return fabric_support.SendTxn("onchainview", "InvokeTxn", [pub_arg, fake_secret_data]);
  
 }).then((txnId)=>{
     console.log(`Finish Txn ${txnId} with the public arg ${pub_arg}`);
 
-    userinput = readline.question(`\nCONTINUE?\n`);
-    pub_arg = "25";
+    userinput = readline.question(`\nWait for 3s to CONTINUE?\n`);
+    pub_arg = "ViewA";
     return fabric_support.SendTxn("onchainview", "InvokeTxn", [pub_arg, fake_secret_data]); // t3
 
 }).then((txnId)=>{
     console.log(`Finish Txn ${txnId} with the public arg ${pub_arg}`);
 
-    userinput = readline.question(`\nCONTINUE?\n`);
-    queried_view_name = "lessthan10";
+    userinput = readline.question(`\nWait for 3s to CONTINUE query?\n`);
+    queried_view_name = "ViewA";
     return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
-}).then((txnIds)=>{
-    console.log(`View ${queried_view_name} include txnIDs ${txnIds}`);
-    userinput = readline.question(`\nCONTINUE?\n`);
 
-    queried_view_name = "greaterthan20";
-    return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t3]
 }).then((txnIds)=>{
     console.log(`View ${queried_view_name} include txnIDs ${txnIds}`);
-    userinput = readline.question(`\nCONTINUE?\n`);
+
+    userinput = readline.question(`\nWait for > 5s to CONTINUE?\n`);
+    pub_arg = "ViewA"; // t2
+    return fabric_support.SendTxn("onchainview", "InvokeTxn", [pub_arg, fake_secret_data]);
+    
+}).then((txnId)=>{
+    console.log(`Finish Txn ${txnId} with the public arg ${pub_arg}`);
+
+    userinput = readline.question(`\nWait for 3s to CONTINUE query?\n`);
+    queried_view_name = "ViewA";
+    return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
+
+}).then((txnIds)=>{
+    console.log(`View ${queried_view_name} include txnIDs ${txnIds}`);
 
 }).catch((err)=>{
     console.log("Invocation fails with err msg: " + err.stack);
-})
-.finally(()=>{
+}).finally(()=>{
     console.log("END.");
     process.exit(0)
 })

@@ -234,10 +234,10 @@ class NewFabricSupport {
         process.exit(1);
     }
 
-    InvokeTxnWithSecret(ccId, secret) {
+    InvokeTxnWithSecret(ccId, pub_arg, secret) {
         // Temporally hardcode the method name in secretcontract.go. 
         var functionName = "InvokeTxn";
-        return this.SendTxn(ccId, functionName, ["11", secret]);
+        return this.SendTxn(ccId, functionName, [pub_arg, secret]);
     }
 
     InvokeTxnWithSecretAsync(ccId, secret) {
@@ -249,7 +249,7 @@ class NewFabricSupport {
     CreateView(viewName, viewData) {
         // console.log(`Create View ${viewName} with Data ${viewData}`);
         // " < 10" is arbitrary. 
-        return this.SendTxn("onchainview", "CreateView", [viewName, " < 10"]).then(()=>{
+        return this.SendTxn("onchainview", "CreateView", [viewName, viewName, "30"]).then(()=>{
             return viewName;
         });
     }
@@ -261,6 +261,8 @@ class NewFabricSupport {
         await txn.submit(...publicArgs);
         const txnID = txn.getTransactionId();
         return txnID;
+        // console.log(`SendTxn: ccId=${ccId}, functionName=${functionName}, publicArgs=${publicArgs}`);
+        // return "1213213";
     }
 
     AppendView(viewName, viewData) {

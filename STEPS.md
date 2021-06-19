@@ -72,8 +72,10 @@ do
 done
 
 function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
-ENDORSE_POLICY="AND($(join_by , $ALL_ORG))"
+ENDORSE_POLICY="OR($(join_by , $ALL_ORG))"
 
 CC_NAME="onchainview"
 ./deployCC.sh ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} "${ENDORSE_POLICY}" 
 ```
+
+node supply_chain_view.js data/batch_100items_10batchsize.json encryption irrevocable

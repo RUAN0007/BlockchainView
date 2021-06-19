@@ -28,19 +28,22 @@ var confidentialPart = "SECRET_PAYLOAD";
 var start;
 var invocationCount = 0;
 var tid2TxnId = {};
-const ccName = "secretcontract";
+const ccName = "onchainview";
 var app_txn_count = 0;
 var batch = 0;
 var batch_elasped_sum = 0;
 
 var logical2PhysicalViews = {};
+var committed_txn_count = 0;
+var rejected_txn_count = 0;
 
 /////////////////////////////////////////////////////////////
 // Below are expected to execute at the U1 side, who invokes the transaction and creates the view. 
 Promise.resolve().then(()=>{
     var initArgs = {"network_dir": "viewnetwork2",
     "channel_name":"viewchannel", "org_id": 1};
-    var fabric_support = new fabricSupport.FabricSupport(initArgs);
+    // var fabric_support = new fabricSupport.FabricSupport(initArgs);
+    var fabric_support = new fabricSupport.NewFabricSupport(initArgs);
     return fabric_support.InitNetwork();
 }).then((fabric_support)=>{
     if (mode == "hash") {
@@ -93,51 +96,32 @@ Promise.resolve().then(()=>{
             // console.log("===============================================");
             // console.log("A view owner prepares Txn " + operation["tid"] + "(tid) to invoke Contract " + ccName + " with confidential part " + confidentialPart);
             // invocationCount += 1;
-            var req_promise = view_manager.InvokeTxn(ccName, confidentialPart, blkOps[i]).then((result)=>{
-                var txnID = result[0];
-                var operation = result[1];
-                var app_tid = operation["tid"];
-                tid2TxnId[app_tid] = txnID;
-                console.log(`App Tid = ${app_tid} for txnID = ${txnID}`);
 
-                var logicalViewCount = operation["views"].length;
-                // invocationCount += numViews;
-                var view2Txns = {};
-                for (var ii = 0; ii < logicalViewCount; ii++) {
-                    let tid = operation["views"][ii]["tid"];
-                    let txnID = tid2TxnId[tid];
-                    let logicalViewName = operation["views"][ii]["name"];
-                    let physicalViewName = logical2PhysicalViews[logicalViewName];
-                    if (physicalViewName in view2Txns) {
-                        // view2Txns[physicalViewName].push(txnID);
-                        var exists = false;
-                        for (var j = 0; j < view2Txns[physicalViewName].length; j++) {
-                            if (view2Txns[physicalViewName][j] === txnID) {
-                                exists = true; 
-                                break
-                            }
-                        }
+            var operation = blkOps[i];
+            var tid = operation["tid"];
+            var logicalViewCount = operation["views"].length;
+            var involved_phyical_views = [];
+            for (var ii = 0; ii < logicalViewCount; ii++) {
+                if (operation["views"][ii]["tid"] != tid) { continue; }
+                var logical_view_name = operation["views"][ii]["name"];
+                var physical_view_name = logical2PhysicalViews[logical_view_name];
+                involved_phyical_views.push(physical_view_name);
+            }
+            var pub_args = involved_phyical_views.join("_");
 
-                        if (! exists) {
-                            view2Txns[physicalViewName].push(txnID);
-                        }
-                    } else {
-                        view2Txns[physicalViewName] = [txnID];
-                    }
-
-                }
-
-                var view_append_promises = [];
-                for (var viewName in view2Txns) {
-                    console.log(`View ${viewName} is appended with txns [${view2Txns[viewName]}]. `)
-                    view_append_promises.push(view_manager.AppendView(viewName, view2Txns[viewName]));
-                }
-
-                return Promise.all(view_append_promises);
-            });
+            var req_promise = view_manager.InvokeTxn(ccName, pub_args, confidentialPart, blkOps[i]);
             request_promises.push(req_promise);
         }
-        await Promise.all(request_promises).then(()=>{
+        await Promise.all(request_promises).then((txn_statuses)=>{
+
+            for (var i in txn_statuses) {
+                if (txn_statuses[i][0] != "") {
+                    rejected_txn_count+=1;
+                } else {
+                    committed_txn_count+=1;
+                }
+            }
+
             let batch_elapsed = new Date() - batch_start;
             batch_elasped_sum += batch_elapsed;
         });
@@ -149,6 +133,7 @@ Promise.resolve().then(()=>{
 .finally(()=>{
     let elapsed = new Date() - start;
     let avg_batch_delay = Math.floor(batch_elasped_sum / batch);
+    console.log(`Committed Txn Count : ${committed_txn_count}, Rejected Txn Count: ${rejected_txn_count}`);
     console.log(`Total Duration (ms): ${elapsed} ,  # of app txn:  ${app_txn_count} , avg batch delay (ms): ${avg_batch_delay} # of batches ${batch}`);
     process.exit(0)
 })

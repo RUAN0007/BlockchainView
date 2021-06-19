@@ -22,17 +22,22 @@ class HashBasedView {
         this.txnSalt = {}; // from TxnID to its salt
     }
 
-    InvokeTxn(ccId, confidentialPart, app_tid) { 
+    InvokeTxn(ccId, pub_args, confidentialPart, app_tid) { 
         var salt = cmgr.CreateSalt();
         console.log(`\tCreate a random salt ${salt}`);
         var secretPayload = cmgr.HashOp(confidentialPart + salt);
         console.log(util.format("\tHash the confidential part into %s ", secretPayload))
-        return this.fabric_support.InvokeTxnWithSecret(ccId, secretPayload).then((txnId)=>{
+        return this.fabric_support.InvokeTxnWithSecret(ccId, pub_args, secretPayload).then((txnId)=>{
             this.txnConfidential[txnId] = confidentialPart;
             this.txnSalt[txnId] = salt;
             console.log(util.format("\tSend a txn %s to invoke %s with %s as the secret part. ", txnId, ccId, secretPayload))
-            return [txnId, app_tid];
-        });
+            return ["", txnId, app_tid];
+        })
+        .catch(error => {
+            // console.log(`Error with code ${error.transactionCode}`);
+            return [error.transactionCode, "", app_tid];
+        })
+        ;;
     }
 
 
