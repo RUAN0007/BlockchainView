@@ -1,1 +1,0 @@
-python measure_block.py  [start-blknum(inclusive)] [end-blknum(exclusive)]
