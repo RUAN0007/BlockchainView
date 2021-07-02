@@ -192,6 +192,7 @@ class NewFabricSupport {
 
         this.connection_profile = connection_profile;
         this.gateway_option = gateway_option;
+        this.view_merge_sec = args.view_merge_sec;
 
         this.txID2Data = {};
     }
@@ -230,9 +231,26 @@ class NewFabricSupport {
 
 
     GetSecretFromTxnId(txnId) {
-        console.log("Not implemented...");
-        process.exit(1);
+        // console.log("================================================");
+        // console.log(util.format("Txn %s structure: ", txnId));
+        if (!(txnId in this.txID2Data)) {
+            throw new Error(`Fail to locate the txn with id ${txnId} `);
+        } 
+        var txnData = this.txID2Data[txnId];
+        var writeSets = txnData.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.writes;
+
+        for (var i = 0; i < writeSets.length; i++) {
+
+        // This string constant must be identical to var secretKey in secretcontract.go
+            if (writeSets[i].key === "secretkey") {
+                return writeSets[i].value.toString();
+            } else {
+                // console.log("Writekey: ", writeSets[i].key);
+            }
+        }
+        throw new Error("Fail to locate the secret payload in txn " + txnId);
     }
+
 
     InvokeTxnWithSecret(ccId, pub_arg, secret) {
         // Temporally hardcode the method name in secretcontract.go. 
@@ -248,8 +266,13 @@ class NewFabricSupport {
 
     CreateView(viewName, viewData) {
         // console.log(`Create View ${viewName} with Data ${viewData}`);
-        // " < 10" is arbitrary. 
-        return this.SendTxn("onchainview", "CreateView", [viewName, viewName, "30"]).then(()=>{
+        // 30 is the merge period
+        var view_merge_sec = "30";
+        var undef;
+        if (this.view_merge_sec !== undef) {
+            view_merge_sec = this.view_merge_sec;
+        }
+        return this.SendTxn("onchainview", "CreateView", [viewName, viewName, view_merge_sec]).then(()=>{
             return viewName;
         });
     }
@@ -270,9 +293,11 @@ class NewFabricSupport {
     }
 
 
-    GetView(viewName) {
-        console.log("Not implemented...");
-        process.exit(1);
+    GetView(viewName) { // diff from aobve, it returns txnIDs
+        return this.Query("onchainview", "RetrieveTxnIdsByView", [viewName]).then((result)=>{
+            // console.log(`Query View ${viewName} for Data ${result}`);
+            return JSON.parse(result);
+        }); // [t1]
     }
 
 
@@ -281,10 +306,14 @@ class NewFabricSupport {
         process.exit(1);
     }
 
+
     async Query(ccId, function_name, args) {
-        console.log("Not implemented...");
-        process.exit(1);
+        const contract = this.network.getContract(ccId);
+        const result = await contract.evaluateTransaction(function_name, ...args);
+        // console.log(`The query has been evaluated on the peer of Org${org_id}, result is: ${result.toString()}`);
+        return result.toString();
     }
+
 }
 
 module.exports.NewFabricSupport = NewFabricSupport;

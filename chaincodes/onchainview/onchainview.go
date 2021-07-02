@@ -92,14 +92,14 @@ const TxnPrvPrefix = "TxnPrv"
 // Can be called by anyone.
 // Func GetPrivateArg(txnID):
 //     return txn_privates[txnID];
-func (t *OnChainView) GetPrivateArg(ctx contractapi.TransactionContextInterface, txnId, private_arg string) string {
-	stub := ctx.GetStub()
-	if val, err := stub.GetState(TxnPrvPrefix + txnId); err != nil {
-		return ""
-	} else {
-		return string(val)
-	}
-}
+// func (t *OnChainView) GetPrivateArg(ctx contractapi.TransactionContextInterface, txnId, private_arg string) string {
+// 	stub := ctx.GetStub()
+// 	if val, err := stub.GetState(TxnPrvPrefix + txnId); err != nil {
+// 		return ""
+// 	} else {
+// 		return string(val)
+// 	}
+// }
 
 //Func InvokeTxn(txnID, pub_arg, private_arg):
 //  private_arg is either hash protected, or encryption-protected.
@@ -116,7 +116,7 @@ func (t *OnChainView) InvokeTxn(ctx contractapi.TransactionContextInterface, pub
 	txnId := ctx.GetStub().GetTxID()
 	stub := ctx.GetStub()
 
-	_ = stub.PutState(TxnPrvPrefix+txnId, []byte(private_arg))
+	_ = stub.PutState("secretkey", []byte(private_arg))
 
 	view_predicates := map[string]string{} //viewName -> viewPredicate
 
@@ -264,6 +264,9 @@ func (t *OnChainView) check_to_merge(ctx contractapi.TransactionContextInterface
 
 // view inclusion logic.
 func (t *OnChainView) satisfy(pub_arg string, predicate string) bool {
+	if pub_arg == "ALL" {
+		return true
+	}
 	satisified_views := strings.Split(pub_arg, "_")
 	for _, s := range satisified_views {
 		if s == predicate {

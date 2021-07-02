@@ -46,29 +46,34 @@ function network_down() {
 }
 
 
-function run_supplychain() {
-    network_up
+function run() {
 
-    workload_file="$1"
-    mode="$2"
-    revocable_mode="$3"
-    process_count=$4
+    mode="$1"
+    revocable_mode="$2"
+    process_count=$3
+    view_count=$4
+    txn_count=$5
+    batch_size=$6
+    selectivity=$7
+
     result_dir="result/$(date +%d-%m)"
     log_dir="result/$(date +%d-%m)/log"
     mkdir -p ${log_dir}
+
+    network_up
     echo "========================================================="
     echo "Start launching ${process_count} client processes for ${mode} ${revocable_mode}."
     for i in $(seq ${process_count}) 
     do
-        log_file="${log_dir}/$(basename ${workload_file} .json)_${mode}_${revocable_mode}_${i}.log"
+        log_file="${log_dir}/${view_count}views_${mode}_${revocable_mode}_${i}.log"
         echo "    Process ${i} log at ${log_file}"
-        node supply_chain_view.js ${workload_file} ${mode} ${revocable_mode} > ${log_file} 2>&1 &
+        node view_scalability.js ${mode} ${revocable_mode} ${view_count} ${txn_count} ${batch_size} ${selectivity}> ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing child processes"
     wait
 
-    aggregated_result_file="${result_dir}/$(basename ${workload_file} .json)_${mode}_${revocable_mode}_${process_count}processes"
+    aggregated_result_file="${result_dir}/${view_count}views_${selectivity}selectivity_${mode}_${revocable_mode}_${process_count}processes"
 
     echo "=========================================================="
     echo "=========================================================="
@@ -79,7 +84,7 @@ function run_supplychain() {
     for i in $(seq ${process_count}) 
     do
         # Must be identical to the above
-        log_file="${log_dir}/$(basename ${workload_file} .json)_${mode}_${revocable_mode}_${i}.log"
+        log_file="${log_dir}/${view_count}views_${mode}_${revocable_mode}_${i}.log"
 
         last_line="$(tail -1 ${log_file})" 
         IFS=' ' read -ra tokens <<< "${last_line}"
@@ -95,6 +100,10 @@ function run_supplychain() {
     done
     avg_batch_delay=$((${total_batch_delay}/${process_count}))
     echo "Total Thruput(tps): ${total_thruput} tps, Batch Delay(ms): ${avg_batch_delay}" | tee -a ${aggregated_result_file}
+
+    echo "Obtain peer metrics and logs"
+    ssh slave-4 "python ${__SCRIPT_DIR}/measure_block.py 0" | tee -a ${aggregated_result_file}
+
     echo "=========================================================="
     echo "=========================================================="
 
@@ -105,19 +114,21 @@ function run_supplychain() {
 main() {
     if [[ $# < 1 ]]; then 
        echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: view_exp.sh [workload_file]" >&2 
+       echo "    Usage: view_scale.sh [process_count]" >&2 
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
-    workload_file="$1"
-    for mode in "hash"  ; do
-        for revocable_mode in "incontract"; do
-            for process_count in 32; do
-    # for mode in "encryption" "hash" ; do
-    #     for revocable_mode in "revocable" "irrevocable" "incontract"; do
-    #         for process_count in 1 2 4 8 16 32; do
-                run_supplychain ${workload_file} ${mode} ${revocable_mode} ${process_count}
-            done
+    process_count=$1
+    batch_size=50
+    txn_count=400
+    revocable_mode="incontract"
+    # for mode in "hash"  ; do
+    #     for view_count in 100 ; do
+    for mode in "hash" "encryption" ; do
+        for view_count in 1 10 50 100  ; do
+            selectivity=1
+            # selectivity=ALL # a txn will get included in all available views.
+            run ${mode} ${revocable_mode} ${process_count} ${view_count} ${txn_count} ${batch_size} ${selectivity}
         done
     done
 

@@ -13,8 +13,9 @@ let userinput;
 // Below are expected to execute at the U1 side, who invokes the transaction and creates the view. 
 Promise.resolve().then(()=>{
     var initArgs = {"network_dir": "viewnetwork2",
-    "channel_name":"viewchannel", "org_id": 1};
-    fabric_support = new fabricSupport.FabricSupport(initArgs);
+    "channel_name":"viewchannel", "org_id": 1, "view_merge_sec":200};
+    // fabric_support = new fabricSupport.FabricSupport(initArgs);
+    fabric_support = new fabricSupport.NewFabricSupport(initArgs);
     return fabric_support.InitNetwork();
 }).then((fabric_support)=>{
     view_name = "ViewA";
@@ -50,7 +51,8 @@ Promise.resolve().then(()=>{
 
     userinput = readline.question(`\nWait for 3s to CONTINUE query?\n`);
     queried_view_name = "ViewA";
-    return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
+    // return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
+    return fabric_support.GetView(queried_view_name);
 
 }).then((txnIds)=>{
     console.log(`View ${queried_view_name} include txnIDs ${txnIds}`);
@@ -64,11 +66,15 @@ Promise.resolve().then(()=>{
 
     userinput = readline.question(`\nWait for 3s to CONTINUE query?\n`);
     queried_view_name = "ViewA";
-    return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
+    return fabric_support.GetView(queried_view_name);
+    // return fabric_support.Query("onchainview", "RetrieveTxnIdsByView", [queried_view_name]); // [t1]
 
 }).then((txnIds)=>{
     console.log(`View ${queried_view_name} include txnIDs ${txnIds}`);
-
+    userinput = readline.question(`\nGet secret for ${txnIds[0]}?\n`);
+    return fabric_support.GetSecretFromTxnId(txnIds[0]);
+}).then((secret)=>{
+    console.log(`The secret is ${secret}`);
 }).catch((err)=>{
     console.log("Invocation fails with err msg: " + err.stack);
 }).finally(()=>{

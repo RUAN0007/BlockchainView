@@ -22,6 +22,29 @@ declare -gr PEER_COUNT=2;
 
 function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
 
+# incontract
+function network_up() {
+    
+    CC_NAME="onchainview"
+    python network.py ${NETWORK_DIR} on
+
+    # Set up the channel
+    ./setup_channel.sh ${NETWORK_DIR} ${CHANNEL}
+
+    # Prepare to deploy the network
+    ALL_ORG=""
+    for i in $(seq ${PEER_COUNT})
+    do
+        ALL_ORG="$ALL_ORG 'Org${i}MSP.peer'"
+    done
+
+    ENDORSE_POLICY="OR($(join_by , $ALL_ORG))"
+
+    ./deployCC.sh ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} "${ENDORSE_POLICY}" 
+}
+
+
+
 function start() {
 
     python network.py "${NETWORK_DIR}" "on"
@@ -64,26 +87,30 @@ main() {
 
     # local workload="$1"
     local -r workload_path="${1}"
-    local result_path
     local -r client_count=$2
+
+    result_dir="result/$(date +%d-%m)"
+    log_dir="result/$(date +%d-%m)/log"
+    mkdir -p ${log_dir}
+
     # for mode in "encryption" "hash" ; do
     #     local r="revocable"
     #     start
     #     echo "=========================================================="
-    #     echo "Run for workload ${workload_path} for ${mode} ${r} with ${client_count} processes"
+    #     echo "Run for workload ${workload_path} for ${mode} ${revocable_mode} with ${client_count} processes"
     #     workload_base="$(basename "${workload_path}" .json)"
 
     #     for i in $(seq ${client_count}); do
     #         # local physicalViewCount=1
-    #         local client_log="result/${workload_base}_${mode}_${r}_${i}.log"
+    #         local client_log="result/${workload_base}_${mode}_${revocable_mode}_${i}.log"
     #         echo "    Client${i} logs at ${client_log}"
-    #         node supply_chain_view.js "${workload_path}" "${mode}" "${r}"  > ${client_log} 2>&1 &
+    #         node supply_chain_view.js "${workload_path}" "${mode}" "${revocable_mode}"  > ${client_log} 2>&1 &
     #     done
     #     echo "Wait for client processes to finish"
     #     wait
 
     #     end 
-    #     result_path="result/${workload_base}_${mode}_${r}.metrics"
+    #     result_path="result/${workload_base}_${mode}_${revocable_mode}.metrics"
     #     ssh slave-4 "python ${__SCRIPT_DIR}/measure_block.py 0" > "${result_path}"
     #     echo "Obtain peer metrics and logs at ${result_path}"
     #     cat ${result_path}
@@ -91,27 +118,31 @@ main() {
 
 
     # for mode in "encryption" "hash" ; do
-    for mode in "hash" ; do
-        local r="irrevocable"
+    for mode in "encryption" ; do
+        # local r="irrevocable"
+        local revocable_mode="incontract"
 
         # for physicalViewCount in 1 4 7 14; do 
-        for physicalViewCount in 4 ; do 
-            start
+        for physicalViewCount in 1 4 7 14; do 
+            # start
+            network_up # onchain contract
             echo "=========================================================="
-            echo "Run for workload ${workload_path} for ${mode} ${r} with ${client_count} processes and ${physicalViewCount} physical views"
+            echo "Run for workload ${workload_path} for ${mode} ${revocable_mode} with ${client_count} processes and ${physicalViewCount} physical views"
             workload_base="$(basename "${workload_path}" .json)"
 
             for i in $(seq ${client_count}); do
                 # local physicalViewCount=1
-                local client_log="result/${workload_base}_${mode}_${r}_${i}.log"
+                local client_log="${log_dir}/$(basename ${workload_path} .json)_${mode}_${revocable_mode}_p${i}.log"
                 echo "    Client${i} logs at ${client_log}"
-                node supply_chain_view.js "${workload_path}" "${mode}" "${r}" ${physicalViewCount} > ${client_log} 2>&1 &
+
+                node supply_chain_view.js "${workload_path}" "${mode}" "${revocable_mode}" ${physicalViewCount} > ${client_log} 2>&1 &
             done
             echo "Wait for client processes to finish"
             wait
 
-            end 
-            result_path="result/${workload_base}_${mode}_${r}_${physicalViewCount}physicalviews.metrics"
+            end # shut the network
+
+            result_path="${result_dir}/${workload_base}_${mode}_${revocable_mode}_${physicalViewCount}physicalviews.metrics"
             ssh slave-4 "python ${__SCRIPT_DIR}/measure_block.py 0" > "${result_path}"
             echo "Obtain peer metrics and logs at ${result_path}"
             cat ${result_path}

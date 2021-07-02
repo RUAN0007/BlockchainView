@@ -6,4 +6,4 @@ viewnetwork*
 node_modules/
 **/vendor
 **/*.sum
-result
+result/*

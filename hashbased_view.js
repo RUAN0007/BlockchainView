@@ -6,15 +6,11 @@ const util = require('util');
 const cmgr = require('./crypto_mgr.js');
 
 class HashBasedView {
-    constructor(fabric_support, revocable) {
-        if (revocable) {
-            console.log("Create a hash-based revocable view manager." )
-        } else {
-            console.log("Create a hash-based irrevocable view manager." )
-        }
+    constructor(fabric_support, revocable_mode) {
+        console.log(`Create a hash-based ${revocable_mode} view manager`);
 
         this.fabric_support = fabric_support;
-        this.revocable = revocable;
+        this.revocable_mode = revocable_mode;
 
         this.txnConfidential = {};
         this.viewTxns = {}; // associate the viewName with a list of txnIDs
@@ -44,7 +40,7 @@ class HashBasedView {
     CreateView(viewName, txnIDs) {
         this.viewTxns[viewName] = txnIDs;
         console.log(util.format("\tAssociate view %s with txn IDs", viewName, txnIDs));
-        if (!this.revocable) {  // Irrevocable
+        if (this.revocable_mode === "irrevocable" || this.revocable_mode === "incontract") {  // Irrevocable
             var key = cmgr.CreateKey();
             console.log(util.format("\tGenerate a random password %s. Use the password to encode each element of the view message.", key))  
             this.viewKeys[viewName] = key;
@@ -74,7 +70,7 @@ class HashBasedView {
     AppendView(viewName, txnIDs) {
         this.viewTxns[viewName].push(...txnIDs);
         console.log(util.format("\tAssociate view %s with txn IDs", viewName, txnIDs));
-        if (!this.revocable) {  // Irrevocable
+        if (this.revocable_mode === "irrevocable") {  // Irrevocable
             var key = this.viewKeys[viewName];
 
             console.log(util.format("\tAssociate the encrypted txnID with the encrypted confidential part and serialize the association into a view msg "))
@@ -104,9 +100,9 @@ class HashBasedView {
     DistributeView(viewName, userPubKey) {
         var distributedData = {};
         distributedData.viewName = viewName;
+        distributedData.mode = this.revocable_mode;
         var viewKey;
-        if (this.revocable) {
-            distributedData.mode = "Revocable";
+        if (this.revocable_mode === "revocable" || this.revocable_mode === "incontract") {
 
             viewKey = cmgr.CreateKey();
             console.log(util.format("\tGenerate a random password %s. Use the password to encode each element of the view message.", viewKey)) 
@@ -130,12 +126,14 @@ class HashBasedView {
             console.log(util.format("\tDistribute the  encoded view message "));
 
 
-        } else { // Irrevocable
-            distributedData.mode = "Irrevocable";
+        } else if (this.revocable_mode === "irrevocable") { // Irrevocable
             var viewKey = this.viewKeys[viewName];
             if (viewKey === undefined) {
                 throw new Error("View " + viewName + " has not been created. ");
             }
+        } else {
+            console.log(`Unsupported revocable mode ${revocable_mode}...`);
+            process.exit(1);
         }
 
         console.log(util.format("\tDistribute the view key %s protected the provided public key ", viewKey));
@@ -151,11 +149,14 @@ class HashBasedView {
         console.log(util.format("\tRecover the key of view %s to %s with the user private key"), viewName, viewKey);
 
         return Promise.resolve().then(()=>{
-            if (distributedData.mode === "Revocable") {
+            if (distributedData.mode === "revocable" || distributedData.mode === "incontract") {
                 return distributedData.viewData;
-            } else { // Irrevocable
+            } else if (distributedData.mode === "irrevocable") {   
                 console.log(util.format("\tFor irrevocable view management, pull view data for %s from blockchains."), distributedData.viewName);
                 return this.fabric_support.GetView(distributedData.viewName);
+            } else {
+                console.log(`Unsupported revocable mode ${distributedData.mode}...`);
+                process.exit(1);
             }
         }).then((encryptedViewMsg)=>{
 
@@ -167,25 +168,32 @@ class HashBasedView {
             for (const encodedTxnID in encryptedViewMsg) {
                 var txnID = cmgr.Decrypt(viewKey, encodedTxnID.toString());
                 var confidentialData = cmgr.Decrypt(viewKey, encryptedViewMsg[encodedTxnID]["cipher"]);
-                console.log("\tUse the password to recover the txnID and the confidential part")
+                // console.log("\tUse the password to recover the txnID and the confidential part")
                 var salt = encryptedViewMsg[encodedTxnID]["salt"];
-                console.log(`\tThe recovered salt is ${salt}`);
+                // console.log(`\tThe recovered salt is ${salt}`);
                 txnIDs.push(txnID);
                 txnConfidentialData[txnID] = confidentialData;
                 localComputedhash[txnID] = cmgr.HashOp(confidentialData + salt);
-                console.log("\tLocally compute the hash of the confidential part for each txn.")
+                // console.log("\tLocally compute the hash of the confidential part for each txn.")
                 promises.push(this.fabric_support.GetSecretFromTxnId(txnID));
             }
-            // console.log("\tView Spec for " + viewName);
-            return Promise.all(promises).then((secrets)=>{
-                for (var i = 0; i < txnIDs.length; i++) {
-                    var txnID = txnIDs[i];
-                    var hashFromSecret = secrets[i];
-                    console.log("\tPull the hash of the confidential part from the blockchain and validate with respect to the self-computed hash.")
-                    console.log(util.format("\t\tTxnID: %s, Confidential Data: %s, Secret Payload: %s, Locally-computed hash: %s"), txnID, txnConfidentialData[txnID], hashFromSecret, localComputedhash[txnID]);
-                }
 
-            });
+            if (distributedData.mode === "incontract") {
+                // retrieve from the contract, the list of txn IDs. 
+                promises.push(this.fabric_support.GetView(viewName));
+            }
+            return Promise.all(promises);
+
+            // currently we skip the validation step
+            // console.log("\tView Spec for " + viewName);
+            // return Promise.all(promises).then((secrets)=>{
+            //     for (var i = 0; i < txnIDs.length; i++) {
+            //         var txnID = txnIDs[i];
+            //         var hashFromSecret = secrets[i];
+            //         console.log("\tPull the hash of the confidential part from the blockchain and validate with respect to the self-computed hash.")
+            //         console.log(util.format("\t\tTxnID: %s, Confidential Data: %s, Secret Payload: %s, Locally-computed hash: %s"), txnID, txnConfidentialData[txnID], hashFromSecret, localComputedhash[txnID]);
+            //     }
+            // });
         });
     }
 }

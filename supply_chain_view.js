@@ -14,10 +14,7 @@ if (process.argv[3] === "hash") {
     mode = "hash";
 }
 // var revocable = true;
-var revocable = false;
-if (process.argv[4] === "revocable") {
-    revocable = true
-}
+var revocable_mode = process.argv[4];
 
 
 let viewInfo = JSON.parse(fs.readFileSync(viewInfoPath));
@@ -43,13 +40,16 @@ Promise.resolve().then(()=>{
     var initArgs = {"network_dir": "viewnetwork2",
     "channel_name":"viewchannel", "org_id": 1};
     // var fabric_support = new fabricSupport.FabricSupport(initArgs);
+    if (revocable_mode !== "incontract") {
+        console.log("Only support incontract now...");
+    }
     var fabric_support = new fabricSupport.NewFabricSupport(initArgs);
     return fabric_support.InitNetwork();
 }).then((fabric_support)=>{
     if (mode == "hash") {
-        view_manager = new hashbased_view.HashBasedView(fabric_support, revocable); 
+        view_manager = new hashbased_view.HashBasedView(fabric_support, revocable_mode); 
     } else {
-        view_manager = new encryptionbased_view.EncryptionBasedView(fabric_support, revocable); 
+        view_manager = new encryptionbased_view.EncryptionBasedView(fabric_support, revocable_mode); 
     }
     var view_creation_promises = [];
     console.log("===============================================");
@@ -133,8 +133,8 @@ Promise.resolve().then(()=>{
 .finally(()=>{
     let elapsed = new Date() - start;
     let avg_batch_delay = Math.floor(batch_elasped_sum / batch);
-    console.log(`Committed Txn Count : ${committed_txn_count}, Rejected Txn Count: ${rejected_txn_count}`);
-    console.log(`Total Duration (ms): ${elapsed} ,  # of app txn:  ${app_txn_count} , avg batch delay (ms): ${avg_batch_delay} # of batches ${batch}`);
+    // console.log(`Committed Txn Count : ${committed_txn_count}, Rejected Txn Count: ${rejected_txn_count}`);
+    console.log(`Total Duration (ms): ${elapsed} ,  # of app txn:  ${app_txn_count} , Committed Txn Count: ${committed_txn_count} , avg batch delay (ms): ${avg_batch_delay} # of batches ${batch}`);
     process.exit(0)
 })
 ;
