@@ -22,31 +22,7 @@ declare -gr PEER_COUNT=2;
 
 function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
 
-# incontract
 function network_up() {
-    
-    CC_NAME="onchainview"
-    python network.py ${NETWORK_DIR} on
-
-    # Set up the channel
-    ./setup_channel.sh ${NETWORK_DIR} ${CHANNEL}
-
-    # Prepare to deploy the network
-    ALL_ORG=""
-    for i in $(seq ${PEER_COUNT})
-    do
-        ALL_ORG="$ALL_ORG 'Org${i}MSP.peer'"
-    done
-
-    ENDORSE_POLICY="OR($(join_by , $ALL_ORG))"
-
-    ./deployCC.sh ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} "${ENDORSE_POLICY}" 
-}
-
-
-
-function start() {
-
     python network.py "${NETWORK_DIR}" "on"
     ./setup_channel.sh "${NETWORK_DIR}" "${CHANNEL}"
 
@@ -56,10 +32,9 @@ function start() {
         ALL_ORG="${ALL_ORG} 'Org${j}MSP.peer'"
     done
 
-    ENDORSE_POLICY="AND($(join_by , ${ALL_ORG}))"
+    ENDORSE_POLICY="OR($(join_by , ${ALL_ORG}))"
     # echo "ENDORSE_POLICY: ${ENDORSE_POLICY}"
     # read -p "Press enter to continue"
-
 
     local CC_NAME="secretcontract"
     ./deployCC.sh "${NETWORK_DIR}" "${CHANNEL}" "${CC_NAME}" "${ENDORSE_POLICY}" 
@@ -69,6 +44,9 @@ function start() {
 
     CC_NAME="viewstorage"
     ./deployCC.sh "${NETWORK_DIR}" "${CHANNEL}" "${CC_NAME}" "${ENDORSE_POLICY}" 
+
+    CC_NAME="onchainview"
+    ./deployCC.sh ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} "${ENDORSE_POLICY}" 
 }
 
 function end() {
@@ -93,6 +71,7 @@ main() {
     log_dir="result/$(date +%d-%m)/log"
     mkdir -p ${log_dir}
 
+    # Currently supply_chain_view.js only supports ViewinContract, not revocable/irrevocable/
     # for mode in "encryption" "hash" ; do
     #     local r="revocable"
     #     start
@@ -116,13 +95,9 @@ main() {
     #     cat ${result_path}
     # done
 
-
-    # for mode in "encryption" "hash" ; do
-    for mode in "encryption" ; do
-        # local r="irrevocable"
+    for mode in "encryption" "hash" ; do
         local revocable_mode="incontract"
 
-        # for physicalViewCount in 1 4 7 14; do 
         for physicalViewCount in 1 4 7 14; do 
             # start
             network_up # onchain contract
@@ -148,23 +123,6 @@ main() {
             cat ${result_path}
         done
     done
-
-
-
-
-
-
-
-
-
-
-    # echo $"Run for ${i} items wit cross-chain baseline"
-    # start
-    # node supply_chain_across.js "${workload_path}"
-    # end
-
-    # result_path="result/${i}items_across.metrics"
-    # ssh slave-4 "python ${__SCRIPT_DIR}/measure_block.py" > "${result_path}"
 
     # popd > /dev/null 2>&1
 }

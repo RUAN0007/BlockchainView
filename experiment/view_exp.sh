@@ -19,7 +19,6 @@ set -o pipefail
 CHANNEL="viewchannel"
 NETWORK_DIR="viewnetwork2"
 PEER_COUNT=2
-CC_NAME="onchainview"
 
 function network_up() {
 
@@ -38,7 +37,17 @@ function network_up() {
     function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
     ENDORSE_POLICY="OR($(join_by , $ALL_ORG))"
 
+    local CC_NAME="secretcontract"
+    ./deployCC.sh "${NETWORK_DIR}" "${CHANNEL}" "${CC_NAME}" "${ENDORSE_POLICY}" 
+
+    CC_NAME="onchainview"
     ./deployCC.sh ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} "${ENDORSE_POLICY}" 
+
+    CC_NAME="txncoordinator"
+    ./deployCC.sh "${NETWORK_DIR}" "${CHANNEL}" "${CC_NAME}" "${ENDORSE_POLICY}" 
+
+    CC_NAME="viewstorage"
+    ./deployCC.sh "${NETWORK_DIR}" "${CHANNEL}" "${CC_NAME}" "${ENDORSE_POLICY}"
 }
 
 function network_down() {
@@ -109,13 +118,11 @@ main() {
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
-    workload_file="$1"
-    for mode in "hash"  ; do
+    for mode in "encryption" "hash" ; do
+        # for revocable_mode in "revocable" "irrevocable" "incontract"; do
+        # So far, supply_chain_view.js is only compatible for ViewInContract, rather than revocable/irrevocable views. 
         for revocable_mode in "incontract"; do
-            for process_count in 32; do
-    # for mode in "encryption" "hash" ; do
-    #     for revocable_mode in "revocable" "irrevocable" "incontract"; do
-    #         for process_count in 1 2 4 8 16 32; do
+            for process_count in 1 2 4 8 16 32; do
                 run_supplychain ${workload_file} ${mode} ${revocable_mode} ${process_count}
             done
         done

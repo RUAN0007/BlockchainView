@@ -86,14 +86,13 @@ main() {
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
-    # for node_count in 1 4 7 14; do
     workload_path="$1"
     process_count=$2
-    for node_count in 7 ; do
-        # last=$(($node_count-1))
-        # for node_num in $(seq 0 1 ${last}); do
-        #     runExp ${node_count} ${node_num} ${workload_path} ${process_count}
-        # done
+    for node_count in 1 4 7 14; do
+        last=$(($node_count-1))
+        for node_num in $(seq 0 1 ${last}); do
+            runExp ${node_count} ${node_num} ${workload_path} ${process_count}
+        done
         echo ""
         echo "Aggregate storges among multiple runs: "
         # Must be identical to the above

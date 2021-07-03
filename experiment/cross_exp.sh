@@ -61,8 +61,7 @@ main() {
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
-    # for i in 1 2 4 8 16 32 ; do
-    for i in 32 ; do
+    for i in 1 2 4 8 16 32 ; do
         runExp "$1" ${i}
     done
 
