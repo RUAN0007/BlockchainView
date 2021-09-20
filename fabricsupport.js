@@ -317,3 +317,70 @@ class NewFabricSupport {
 }
 
 module.exports.NewFabricSupport = NewFabricSupport;
+
+
+class FakeFabricSupport {
+    constructor(args) {
+        var network_dir  = args.network_dir;
+        var org_id = args.org_id;
+        this.channel_name = args.channel_name;
+        this.txID2Data = {};
+    }
+
+    async InitNetwork() {
+        return this;
+    }
+
+
+    GetSecretFromTxnId(txnId) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    InvokeTxnWithSecret(ccId, pub_arg, secret) {
+        // Temporally hardcode the method name in secretcontract.go. 
+        var functionName = "InvokeTxn";
+        return this.SendTxn(ccId, functionName, [pub_arg, secret]);
+    }
+
+    InvokeTxnWithSecretAsync(ccId, secret) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    CreateView(viewName, viewData) {
+        return viewName;
+    }
+
+    // publicArgs: an array of strings
+    async SendTxn(ccId, functionName, publicArgs) {
+        let rand_id = (Math.random() + 1).toString(36);
+        return rand_id;
+    }
+
+    AppendView(viewName, viewData) {
+        return viewName;
+    }
+
+
+    GetView(viewName) { // diff from aobve, it returns txnIDs
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    SendTxnAsync(ccId, functionName, publicArgs) {
+        console.log("Not implemented...");
+        process.exit(1);
+    }
+
+
+    async Query(ccId, function_name, args) {
+        return "";
+    }
+
+}
+
+module.exports.FakeFabricSupport = FakeFabricSupport;

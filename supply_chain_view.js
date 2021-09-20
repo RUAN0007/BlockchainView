@@ -1,18 +1,21 @@
 'use strict';
 const fabricSupport = require("./fabricsupport.js");
 const hashbased_view = require("./hashbased_view.js");
+const noop_view = require("./noop_view.js");
 const encryptionbased_view = require("./encryptionbased_view.js");
 const readline = require('readline-sync');
 
 
 const fs = require('fs');
+const { exit } = require("process");
 
 var viewInfoPath = process.argv[2];
-var mode = "encryption";
+var mode = process.argv[3];
 
-if (process.argv[3] === "hash") {
-    mode = "hash";
-}
+// var mode = "encryption";
+// if (process.argv[3] === "hash") {
+//     mode = "hash";
+// }
 // var revocable = true;
 var revocable_mode = process.argv[4];
 
@@ -40,16 +43,26 @@ Promise.resolve().then(()=>{
     var initArgs = {"network_dir": "viewnetwork2",
     "channel_name":"viewchannel", "org_id": 1};
     // var fabric_support = new fabricSupport.FabricSupport(initArgs);
-    if (revocable_mode !== "incontract") {
-        console.log("Only support incontract now...");
+    var fabric_support;
+    if (revocable_mode === "incontract") {
+        fabric_support = new fabricSupport.NewFabricSupport(initArgs);
+    } else if (revocable_mode === "fake_blockchain") {
+        fabric_support = new fabricSupport.FakeFabricSupport(initArgs);
+    } else {
+        console.log("Only support incontract/fake blockchain now...");
+        process.exit(1)
     }
-    var fabric_support = new fabricSupport.NewFabricSupport(initArgs);
     return fabric_support.InitNetwork();
 }).then((fabric_support)=>{
     if (mode == "hash") {
         view_manager = new hashbased_view.HashBasedView(fabric_support, revocable_mode); 
-    } else {
+    } else if (mode == "encryption") {
         view_manager = new encryptionbased_view.EncryptionBasedView(fabric_support, revocable_mode); 
+    } else if (mode == "noop") {
+        view_manager = new noop_view.NoopView(fabric_support, revocable_mode); 
+    } else {
+        console.log(`Unrecognized mode ${mode}`);
+        process.exit(1);
     }
     var view_creation_promises = [];
     console.log("===============================================");

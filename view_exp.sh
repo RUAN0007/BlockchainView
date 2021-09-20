@@ -45,14 +45,19 @@ function network_down() {
     python network.py ${NETWORK_DIR} off
 }
 
-
 function run_supplychain() {
-    network_up
 
     workload_file="$1"
     mode="$2"
     revocable_mode="$3"
     process_count=$4
+
+    if [[ "$revocable_mode" == "fake_blockchain" ]]; then
+        echo "not to spin up blockchain"    
+    else
+        network_up
+    fi
+
     result_dir="result/$(date +%d-%m)"
     log_dir="result/$(date +%d-%m)/log"
     mkdir -p ${log_dir}
@@ -98,7 +103,11 @@ function run_supplychain() {
     echo "=========================================================="
     echo "=========================================================="
 
-    network_down
+    if [[ "$revocable_mode" == "fake_blockchain" ]]; then
+        echo "not to spin off blockchain"    
+    else
+        network_down
+    fi
 }
 
 # The main function
@@ -110,11 +119,15 @@ main() {
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     workload_file="$1"
-    for mode in "hash"  ; do
+
+    # encryption + fake_blockchain -> Measure key generation overhead
+    # noop + incontract -> fabric raw thruput
+
+    for mode in "noop"  ; do
         for revocable_mode in "incontract"; do
-            for process_count in 32; do
-    # for mode in "encryption" "hash" ; do
-    #     for revocable_mode in "revocable" "irrevocable" "incontract"; do
+            for process_count in 2 4 8 16 32; do
+    # for mode in "encryption" "hash" "noop" ; do
+    #     for revocable_mode in "revocable" "irrevocable" "incontract" "fake_blockchain"; do
     #         for process_count in 1 2 4 8 16 32; do
                 run_supplychain ${workload_file} ${mode} ${revocable_mode} ${process_count}
             done
