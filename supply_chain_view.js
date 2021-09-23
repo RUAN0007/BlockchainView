@@ -19,6 +19,25 @@ var mode = process.argv[3];
 // var revocable = true;
 var revocable_mode = process.argv[4];
 
+var network_dir = "viewnetwork2";
+if (process.argv[5] !== undefined) {
+    network_dir = process.argv[5];
+}
+
+var channel_name = "viewchannel";
+if (process.argv[6] !== undefined) {
+    channel_name = process.argv[6];
+}
+
+var ccName = "onchainview";
+if (process.argv[7] !== undefined) {
+    ccName = process.argv[7];
+}
+
+var physicalViewCount = 0; 
+if (process.argv[8] !== undefined) {
+    physicalViewCount = parseInt(process.argv[8]);
+}
 
 let viewInfo = JSON.parse(fs.readFileSync(viewInfoPath));
 
@@ -28,7 +47,6 @@ var confidentialPart = "SECRET_PAYLOAD";
 var start;
 var invocationCount = 0;
 var tid2TxnId = {};
-const ccName = "onchainview";
 var app_txn_count = 0;
 var batch = 0;
 var batch_elasped_sum = 0;
@@ -40,8 +58,8 @@ var rejected_txn_count = 0;
 /////////////////////////////////////////////////////////////
 // Below are expected to execute at the U1 side, who invokes the transaction and creates the view. 
 Promise.resolve().then(()=>{
-    var initArgs = {"network_dir": "viewnetwork2",
-    "channel_name":"viewchannel", "org_id": 1};
+    var initArgs = {"network_dir": network_dir,
+    "channel_name":channel_name, "org_id": 1, "cc_viewincontract_name": ccName};
     // var fabric_support = new fabricSupport.FabricSupport(initArgs);
     var fabric_support;
     if (revocable_mode === "incontract") {
@@ -67,10 +85,7 @@ Promise.resolve().then(()=>{
     var view_creation_promises = [];
     console.log("===============================================");
     var logicalViewCount = viewInfo["views"].length;
-    var physicalViewCount = logicalViewCount; 
-    if (process.argv[5] !== undefined) {
-        physicalViewCount = parseInt(process.argv[5]);
-    }
+    physicalViewCount = logicalViewCount; 
 
     console.log(`Create ${physicalViewCount} views for ${logicalViewCount} ones. `);
     for (var i = 0; i < physicalViewCount; i++) {
@@ -121,7 +136,6 @@ Promise.resolve().then(()=>{
                 involved_phyical_views.push(physical_view_name);
             }
             var pub_args = involved_phyical_views.join("_");
-
             var req_promise = view_manager.InvokeTxn(ccName, pub_args, confidentialPart, blkOps[i]);
             request_promises.push(req_promise);
         }

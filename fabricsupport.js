@@ -1,4 +1,4 @@
-const { Gateway, DefaultEventHandlerStrategies } = require('fabric-network');
+const { Gateway, DefaultEventHandlerStrategies, BlockDecoder } = require('fabric-network');
 const path = require('path');
 const fs = require('fs');
 
@@ -163,6 +163,7 @@ class NewFabricSupport {
         var network_dir  = args.network_dir;
         var org_id = args.org_id;
         this.channel_name = args.channel_name;
+        this.cc_viewincontract_name = args.cc_viewincontract_name;
 
         const profile_path = path.resolve(network_dir, "crypto_config", "peerOrganizations", `org${org_id}.example.com`, "connection_profile.json");
         const connection_profile = JSON.parse(fs.readFileSync(profile_path, 'utf8'));
@@ -230,6 +231,64 @@ class NewFabricSupport {
     }
 
 
+    async GetBlockByNumber(blk_num) {
+        const contract = this.network.getContract('qscc');
+        const resultByte = await contract.evaluateTransaction(
+            'GetBlockByNumber',
+            this.channel_name,
+            String(blk_num)
+        );
+        // console.log(`Block ${blk_num} has ${resultByte}`);
+        // const resultJson = BlockDecoder.decode(resultByte);
+        // console.log(`Block ${blk_num} has ${resultJson}`);
+    }
+
+    async GetTxnById(txn_id) {
+        const contract = this.network.getContract('qscc');
+        const resultByte = await contract.evaluateTransaction(
+            'GetTransactionByID',
+            this.channel_name,
+            txn_id
+        );
+        // console.log(`Txn ${txn_id} has ${resultByte}`);
+        // const resultJson = BlockDecoder.decode(resultByte);
+        // console.log(`Block ${blk_num} has ${resultJson}`);
+    }
+
+    async MeasureScanLedger() {
+        var blk_num = 0;
+        var start;
+        try {
+            start = new Date();
+            while (1) {
+                // console.log(`Pull block ${blk_num}`);
+                const contract = this.network.getContract('qscc');
+                const resultByte = await contract.evaluateTransaction(
+                    'GetBlockByNumber',
+                    this.channel_name,
+                    String(blk_num)
+                );
+                blk_num +=1;
+            }
+        } catch(error) {
+            let elapsed = new Date() - start;
+            console.log(`Scan ${blk_num} blocks in ${elapsed} ms`);
+            // TODO: for some reason, use awaited functions with try block will hang on the process. 
+            // Just stop the process for convenience. 
+            process.exit(0);
+        }
+    }
+
+    // async GetLedgerHeight() {
+    //     const contract = this.network.getContract('qscc');
+    //     const resultByte = await contract.evaluateTransaction(
+    //         'GetChainInfo',
+    //         this.channel_name
+    //     );
+    //     // let chain_info = JSON.parse(resultByte);
+    //     console.log(`ChainInfo has ${resultByte}`); 
+    // }
+
     GetSecretFromTxnId(txnId) {
         // console.log("================================================");
         // console.log(util.format("Txn %s structure: ", txnId));
@@ -272,7 +331,7 @@ class NewFabricSupport {
         if (this.view_merge_sec !== undef) {
             view_merge_sec = this.view_merge_sec;
         }
-        return this.SendTxn("onchainview", "CreateView", [viewName, viewName, view_merge_sec]).then(()=>{
+        return this.SendTxn(this.cc_viewincontract_name, "CreateView", [viewName, viewName, view_merge_sec]).then(()=>{
             return viewName;
         });
     }
@@ -294,7 +353,7 @@ class NewFabricSupport {
 
 
     GetView(viewName) { // diff from aobve, it returns txnIDs
-        return this.Query("onchainview", "RetrieveTxnIdsByView", [viewName]).then((result)=>{
+        return this.Query(this.cc_viewincontract_name, "RetrieveTxnIdsByView", [viewName]).then((result)=>{
             // console.log(`Query View ${viewName} for Data ${result}`);
             return JSON.parse(result);
         }); // [t1]

@@ -2,12 +2,13 @@ NETWORK_DIR="$(pwd)/$1" # Convert to abs path as we may change working directory
 CHANNEL_NAME=${2}
 CC_NAME=${3}
 CC_ENDORSE_POLICY=${4}
-CC_INIT_FCN=${5:-"NA"}
-CC_QUERY_FCN=${6:-"NA"} # Optionally invoke a query to verify the entire process.
+CC_PRIVATE_COLLECTION=${5:-"NA"}
+CC_INIT_FCN=${6:-"NA"}
+CC_QUERY_FCN=${7:-"NA"} # Optionally invoke a query to verify the entire process.
 
-DELAY=${7:-"3"}
-MAX_RETRY=${8:-"5"}
-VERBOSE=${9:-"false"}
+DELAY=${8:-"3"}
+MAX_RETRY=${9:-"5"}
+VERBOSE=${10:-"false"}
 
 CC_VERSION="1.0"
 CC_SEQUENCE="1"
@@ -16,6 +17,12 @@ if [[ "${CC_INIT_FCN}" == "NA" ]]; then
 	INIT_OPT=""
 else
 	INIT_OPT="--init-required"
+fi
+
+if [[ "${CC_PRIVATE_COLLECTION}" == "NA" ]]; then
+	PRIV_COL_OPT=""
+else
+	PRIV_COL_OPT="--collections-config ${CC_PRIVATE_COLLECTION} "
 fi
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -83,7 +90,7 @@ approveForMyOrg() {
 	getOrderer ${NETWORK_DIR} 1 # Use 1st orderer
 
 	set -x
-	./bin/peer lifecycle chaincode approveformyorg -o ${ORDERER_ADDR_PORT} --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_OPT} --signature-policy $CC_ENDORSE_POLICY  >&log.txt
+	./bin/peer lifecycle chaincode approveformyorg -o ${ORDERER_ADDR_PORT} --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_OPT} ${PRIV_COL_OPT} --signature-policy $CC_ENDORSE_POLICY  >&log.txt
 	set +x
 	cat log.txt
 	verifyResult $res "Chaincode definition approved on peer0.org${ORG} on channel '$CHANNEL_NAME' failed"
@@ -138,7 +145,7 @@ commitChaincodeDefinition() {
 	# it using the "-o" option
 
 	set -x
-	./bin/peer lifecycle chaincode commit -o ${ORDERER_ADDR_PORT} --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_OPT} --signature-policy ${CC_ENDORSE_POLICY} >&log.txt
+	./bin/peer lifecycle chaincode commit -o ${ORDERER_ADDR_PORT} --tls --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} $PEER_CONN_PARMS --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_OPT} ${PRIV_COL_OPT} --signature-policy ${CC_ENDORSE_POLICY} >&log.txt
 	res=$?
 	set +x
 	cat log.txt
