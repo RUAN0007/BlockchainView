@@ -3,6 +3,7 @@ const fabricSupport = require("./fabricsupport.js");
 const hashbased_view = require("./hashbased_view.js");
 const noop_view = require("./noop_view.js");
 const encryptionbased_view = require("./encryptionbased_view.js");
+const { BlockDecoder } = require('fabric-common');
 const readline = require('readline-sync');
 
 var mode = process.argv[2];
@@ -33,6 +34,10 @@ var single_view_name = "SingleView";
 
 var txn_scan_start;
 var txn_scan_batch_count;
+
+var txn_query_ms = 0;
+var txn_verify_ms = 0;
+
 const txn_scan_batch_size = 50;
 const txn_load_batch_size = 50;
 
@@ -108,13 +113,27 @@ Promise.resolve().then(()=>{
     return txn_scan_batch_ids.reduce( async (previousPromise, batch_id) => {
         await previousPromise;
         // console.log(`Scan txn batch ${batch_id}`);
+        var query_start = new Date();
         var request_promises = [];
         for (var i = 0; i < txn_scan_batch_size; i++) {
             let txn_id = txn_ids[batch_id * txn_scan_batch_size + i];
             request_promises.push(fabric_support.GetTxnById(txn_id));
         }
 
-        await Promise.all(request_promises).catch((error)=>{
+        await Promise.all(request_promises).then((bytes_of_txns)=>{
+            var query_end = new Date();
+            txn_query_ms += query_end - query_start;
+
+            var verify_start = query_end;
+            for (var i = 0; i < bytes_of_txns.length; i++) {
+                var txn = BlockDecoder.decodeTransaction(bytes_of_txns[i]);
+                fabric_support.InspectTxnRW(txn.transactionEnvelope.payload.data);
+                // console.log(`Batch ${batch_id} Txn ${i} ${txn}`);
+            }
+            var verify_end = new Date();
+            txn_verify_ms += verify_end - verify_start;
+
+        }).catch((error)=>{
             console.log(`Fail to get txn ID ${error}`);
         });
 
@@ -122,7 +141,8 @@ Promise.resolve().then(()=>{
 
 }).then(()=>{
     let txn_scan_elapse = new Date() - txn_scan_start;
-    console.log(`Scan ${txn_scan_batch_count} ${txn_scan_batch_size}-batch transactions in ${txn_scan_elapse} ms `);
+    console.log(`Scan ${txn_scan_batch_count} ${txn_scan_batch_size}-batch transactions in ${txn_scan_elapse} ms ( remote query in ${txn_query_ms} ms, verify in ${txn_verify_ms} ms ) `);
+    // Measure Block Query and Verification here. 
     return fabric_support.MeasureScanLedger();
 }).catch((err)=>{
     console.log("Invocation fails with err msg: " + err.stack);

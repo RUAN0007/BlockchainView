@@ -19,7 +19,8 @@ set -o pipefail
 CHANNEL="viewchannel"
 NETWORK_DIR="viewnetwork2"
 PEER_COUNT=2
-CC_NAME="onchainview"
+# CC_NAME="onchainview"
+CC_NAME="noop"
 
 function network_up() {
 
@@ -67,7 +68,7 @@ function run_supplychain() {
     do
         log_file="${log_dir}/$(basename ${workload_file} .json)_${mode}_${revocable_mode}_${i}.log"
         echo "    Process ${i} log at ${log_file}"
-        node supply_chain_view.js ${workload_file} ${mode} ${revocable_mode} > ${log_file} 2>&1 &
+        node supply_chain_view.js ${workload_file} ${mode} ${revocable_mode} ${NETWORK_DIR} ${CHANNEL} ${CC_NAME} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing child processes"

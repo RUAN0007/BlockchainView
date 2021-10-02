@@ -129,11 +129,13 @@ main() {
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     workload_file="$1"
 
-    for peer_count in 9; do
+    for peer_count in 5 7 9; do
     # for peer_count in 3 5 7 9; do
-        run_exp ${workload_file} ${peer_count} "privateonchainview" "./chaincodes/privateonchainview/collection_config.json"
+        # run_exp ${workload_file} ${peer_count} "privateonchainview" "./chaincodes/privateonchainview/collection_config.json"
+
+        run_exp ${workload_file} ${peer_count} "privateonly" "./chaincodes/privateonchainview/collection_config.json"
         
-        run_exp ${workload_file} ${peer_count} "onchainview"
+        # run_exp ${workload_file} ${peer_count} "onchainview"
     done
 
     # parse result

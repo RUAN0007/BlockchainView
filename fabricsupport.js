@@ -1,4 +1,5 @@
-const { Gateway, DefaultEventHandlerStrategies, BlockDecoder } = require('fabric-network');
+const { Gateway, DefaultEventHandlerStrategies} = require('fabric-network');
+const { BlockDecoder } = require('fabric-common');
 const path = require('path');
 const fs = require('fs');
 
@@ -230,6 +231,20 @@ class NewFabricSupport {
         return this;
     }
 
+    InspectTxnRW(txnData) {
+        if (txnData.hasOwnProperty('actions')) {
+            var writeSets = txnData.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.writes;
+
+            for (var i = 0; i < writeSets.length; i++) {
+            }
+
+            var readSets = txnData.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.reads;
+            for (var i = 0; i < readSets.length; i++) {
+            }
+        } else {
+            // Ignore config txn
+        }
+    }
 
     async GetBlockByNumber(blk_num) {
         const contract = this.network.getContract('qscc');
@@ -238,29 +253,29 @@ class NewFabricSupport {
             this.channel_name,
             String(blk_num)
         );
-        // console.log(`Block ${blk_num} has ${resultByte}`);
-        // const resultJson = BlockDecoder.decode(resultByte);
-        // console.log(`Block ${blk_num} has ${resultJson}`);
     }
 
     async GetTxnById(txn_id) {
         const contract = this.network.getContract('qscc');
-        const resultByte = await contract.evaluateTransaction(
+        const txnBytes = await contract.evaluateTransaction(
             'GetTransactionByID',
             this.channel_name,
             txn_id
         );
-        // console.log(`Txn ${txn_id} has ${resultByte}`);
-        // const resultJson = BlockDecoder.decode(resultByte);
-        // console.log(`Block ${blk_num} has ${resultJson}`);
+        return txnBytes;
     }
 
     async MeasureScanLedger() {
         var blk_num = 0;
         var start;
+
+        var total_query_ms = 0;
+        var total_verification_ms = 0;
+
         try {
             start = new Date();
             while (1) {
+                let start_query = new Date();
                 // console.log(`Pull block ${blk_num}`);
                 const contract = this.network.getContract('qscc');
                 const resultByte = await contract.evaluateTransaction(
@@ -268,11 +283,22 @@ class NewFabricSupport {
                     this.channel_name,
                     String(blk_num)
                 );
+                let end_query = new Date();
+                total_query_ms += end_query - start_query;
+
+                let start_verify = new Date();
+                const block = BlockDecoder.decode(resultByte);
+                for (var index = 0; index < block.data.data.length; index++) {
+                    this.InspectTxnRW(block.data.data[index].payload.data);
+                }
+                let end_verify = new Date();
+                total_verification_ms += end_verify - start_verify;
+
                 blk_num +=1;
             }
         } catch(error) {
-            let elapsed = new Date() - start;
-            console.log(`Scan ${blk_num} blocks in ${elapsed} ms`);
+            let total_elapsed = new Date() - start;
+            console.log(`Scan ${blk_num} blocks in ${total_elapsed} ms ( remote query in ${total_query_ms} ms, verify in ${total_verification_ms} ms ) `);
             // TODO: for some reason, use awaited functions with try block will hang on the process. 
             // Just stop the process for convenience. 
             process.exit(0);
