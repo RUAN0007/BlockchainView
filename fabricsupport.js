@@ -2,6 +2,8 @@ const { Gateway, DefaultEventHandlerStrategies} = require('fabric-network');
 const { BlockDecoder } = require('fabric-common');
 const path = require('path');
 const fs = require('fs');
+const fabproto6 = require('fabric-protos');
+
 
 const viewstorageContract = "viewstorage"; // corresponds to the chaincode name
 
@@ -253,6 +255,10 @@ class NewFabricSupport {
             this.channel_name,
             String(blk_num)
         );
+
+        var chain_info = ledger_proto.BlockchainInfo.decode(resultByte);
+        var height = chain_info.getHeight();
+        console.log(`height=${height}`);
     }
 
     async GetTxnById(txn_id) {
@@ -265,23 +271,36 @@ class NewFabricSupport {
         return txnBytes;
     }
 
+    async GetLedgerHeight() {
+        const contract = this.network.getContract('qscc');
+        const resultByte = await contract.evaluateTransaction(
+            'GetChainInfo',
+            this.channel_name
+        );
+
+        const blockinfoProto = fabproto6.common.BlockchainInfo.decode(resultByte);
+        var height = blockinfoProto.height;
+        console.log(`chain height = ${height}`);
+        return height;
+    }
+
     async MeasureScanLedger() {
         var blk_num = 0;
         var start;
 
         var total_query_ms = 0;
         var total_verification_ms = 0;
+        var chain_height = await this.GetLedgerHeight();
 
-        try {
-            start = new Date();
-            while (1) {
+        start = new Date();
+        for (var blk_height = 0; blk_height < chain_height; blk_height++) {
                 let start_query = new Date();
-                // console.log(`Pull block ${blk_num}`);
+                console.log(`Pull block ${blk_height}`);
                 const contract = this.network.getContract('qscc');
                 const resultByte = await contract.evaluateTransaction(
                     'GetBlockByNumber',
                     this.channel_name,
-                    String(blk_num)
+                    String(blk_height)
                 );
                 let end_query = new Date();
                 total_query_ms += end_query - start_query;
@@ -293,27 +312,11 @@ class NewFabricSupport {
                 }
                 let end_verify = new Date();
                 total_verification_ms += end_verify - start_verify;
-
-                blk_num +=1;
-            }
-        } catch(error) {
-            let total_elapsed = new Date() - start;
-            console.log(`Scan ${blk_num} blocks in ${total_elapsed} ms ( remote query in ${total_query_ms} ms, verify in ${total_verification_ms} ms ) `);
-            // TODO: for some reason, use awaited functions with try block will hang on the process. 
-            // Just stop the process for convenience. 
-            process.exit(0);
         }
-    }
 
-    // async GetLedgerHeight() {
-    //     const contract = this.network.getContract('qscc');
-    //     const resultByte = await contract.evaluateTransaction(
-    //         'GetChainInfo',
-    //         this.channel_name
-    //     );
-    //     // let chain_info = JSON.parse(resultByte);
-    //     console.log(`ChainInfo has ${resultByte}`); 
-    // }
+        let total_elapsed = new Date() - start;
+        console.log(`Scan ${chain_height} blocks in ${total_elapsed} ms ( remote query in ${total_query_ms} ms, verify in ${total_verification_ms} ms ) `);
+    }
 
     GetSecretFromTxnId(txnId) {
         // console.log("================================================");

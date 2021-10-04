@@ -148,6 +148,6 @@ Promise.resolve().then(()=>{
     console.log("Invocation fails with err msg: " + err.stack);
 })
 .finally(()=>{
-
+    process.exit(0);
 })
 ;
