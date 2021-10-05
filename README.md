@@ -71,6 +71,9 @@ cp -r fabric-samples/config .
 
 # Make binaries accessible on $PATH
 export PATH="$(pwd)/fabric-samples/bin:${PATH}"
+
+# Install front end
+npm install
 ```
 
 **NOTE**: 
