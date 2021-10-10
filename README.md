@@ -117,7 +117,6 @@ CC_NAME="noop"
 
 CC_NAME="privateonchainview"
 ./network.sh deployCC -c ${CHANNEL} -ccl go -ccn ${CC_NAME} -ccp ../chaincodes/${CC_NAME} -ccep ${ENDORSE_POLICY} -cccg ../chaincodes/${CC_NAME}/collection_config.json
-
 ```
 
 

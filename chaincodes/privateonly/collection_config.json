@@ -1,7 +1,7 @@
 [
     {
-    "name": "ThreePeerCollection",
-    "policy": "OR('Org1MSP.peer', 'Org2MSP.peer', 'Org3MSP.peer')",
+    "name": "TwoPeerCollection",
+    "policy": "OR('Org1MSP.peer', 'Org2MSP.peer')",
     "requiredPeerCount": 1,
     "maxPeerCount": 1,
     "blockToLive":1000000,

@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const fabproto6 = require('fabric-protos');
 
+const LOGGER = require('loglevel');
+
 class FabricFront {
     constructor(profile_path, channel_name, mspId, cert_path, key_path) {
         this.connection_profile = JSON.parse(fs.readFileSync(profile_path, 'utf8'));
@@ -39,6 +41,7 @@ class FabricFront {
 
     // Invoke a state-modifying txn that undergoes consensus and validation. 
     async InvokeTxn(cc_id, func_name, args) {
+        // LOGGER.info(`InvokeTxn ${cc_id} with ${func_name} and ${args}`);
         const contract = this.network.getContract(cc_id);
         const txn = contract.createTransaction(func_name);
         await txn.submit(...args);
@@ -51,6 +54,20 @@ class FabricFront {
         const contract = this.network.getContract(cc_id);
         const result_bytes = await contract.evaluateTransaction(function_name, ...args);
         return result_bytes;
+    }
+
+    async GetWriteFieldFromTxnId(txnID, field) {
+        let txn_data = await this.GetTxnDataById(txnID);
+        let decoded_txn = this.DecodeTxn(txn_data);
+        let write_sets = decoded_txn.transactionEnvelope.payload.data.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.writes;
+
+        for (var i = 0; i < write_sets.length; i++) {
+            if (write_sets[i].key === field ) {
+                return write_sets[i].value.toString();
+            } else {
+                // console.log("Writekey: ", writeSets[i].key);
+            }
+        }
     }
 
     // Inspect a txn's accessed value to mock the verification. 
@@ -121,3 +138,54 @@ class FabricFront {
 }
 
 module.exports.FabricFront = FabricFront;
+
+class MockFabricFront {
+    constructor(profile_path, channel_name, mspId, cert_path, key_path) {
+    }
+
+    async InitNetwork() {
+        return this;
+    }
+
+    // Invoke a state-modifying txn that undergoes consensus and validation. 
+    async InvokeTxn(cc_id, func_name, args) {
+        let rand_str = (Math.random() + 1).toString(36).substring(7);
+        return rand_str;
+    }
+
+    // Query a chaincode state on a peer without undergoing the consensus
+    async Query(cc_id, function_name, args) {
+        return undefined;
+    }
+
+    // Inspect a txn's accessed value to mock the verification. 
+    InspectTxnRW(txnData) {
+        console.log("Not implemented...");
+        process.exit(1)
+    }
+
+    async GetLedgerHeight() {
+        return 0;
+    }
+
+    async GetTxnDataById(txn_id) {
+        return undefined;
+    }
+
+    DecodeTxn(txn_bytes) {
+        console.log("Not implemented...");
+        process.exit(1)
+    }
+
+    async ScanLedgerForDelayStorage() {
+
+        var total_query_ms = 0;
+        var total_verification_ms = 0;
+        var total_storage = 0;
+        
+        return {"query_delay(ms)": total_query_ms, "verification_delay(ms)": total_verification_ms, 
+                "ledger_size(bytes)": total_storage};
+    }
+}
+
+module.exports.MockFabricFront = MockFabricFront;

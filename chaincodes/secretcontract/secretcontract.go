@@ -15,13 +15,21 @@ type SecretContract struct {
 	contractapi.Contract
 }
 
-func (t *SecretContract) InvokeWithSecret(ctx contractapi.TransactionContextInterface, secret string) error {
+func (t *SecretContract) InvokeTxn(ctx contractapi.TransactionContextInterface, pub_arg, private_arg string) error {
 	stub := ctx.GetStub()
 	txID := stub.GetTxID()
 
-	if err := stub.PutState("secretkey", []byte(secret)); err != nil {
+	if err := stub.PutState("secretkey", []byte(private_arg)); err != nil {
 		return fmt.Errorf("fail to persist secret for %s", txID)
 	}
+	return nil
+}
+
+func (t *SecretContract) InvokeTxnWithPrvData(ctx contractapi.TransactionContextInterface, pub_arg, private_arg string) error {
+	stub := ctx.GetStub()
+	// _ = stub.PutState("secretkey", []byte(private_arg))
+	_ = stub.PutPrivateData("ThreePeerCollection", "secretkey", []byte(private_arg))
+	_ = stub.PutState("pubarg", []byte(pub_arg))
 	return nil
 }
 

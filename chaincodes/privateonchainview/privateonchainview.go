@@ -116,7 +116,7 @@ func (t *PrivateOnChainView) InvokeTxn(ctx contractapi.TransactionContextInterfa
 	txnId := ctx.GetStub().GetTxID()
 	stub := ctx.GetStub()
 
-	// _ = stub.PutState("secretkey", []byte(private_arg))
+	_ = stub.PutState("pubarg", []byte(pub_arg))
 	_ = stub.PutPrivateData("TwoPeerCollection", "secretkey", []byte(private_arg))
 
 	view_predicates := map[string]string{} //viewName -> viewPredicate

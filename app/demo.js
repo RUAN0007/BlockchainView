@@ -45,3 +45,14 @@ Promise.resolve().then(()=>{
 }).finally(()=>{
     process.exit(0);
 });
+
+// const logger = require('loglevel');
+
+// //more docs here - https://github.com/pimterry/loglevel#documentation
+// logger.setDefaultLevel('debug')
+// logger.trace('Loglevel (trace)');
+// logger.debug('Loglevel (debug)');
+// logger.info('Loglevel (info)');
+// logger.warn('Loglevel (warn)');
+// logger.error('Loglevel (error)');
+// logger.info('Loglevel (info)');

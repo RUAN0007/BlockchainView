@@ -116,6 +116,7 @@ func (t *OnChainView) InvokeTxn(ctx contractapi.TransactionContextInterface, pub
 	txnId := ctx.GetStub().GetTxID()
 	stub := ctx.GetStub()
 
+	_ = stub.PutState("pubarg", []byte(pub_arg))
 	_ = stub.PutState("secretkey", []byte(private_arg))
 
 	view_predicates := map[string]string{} //viewName -> viewPredicate

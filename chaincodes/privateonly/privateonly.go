@@ -51,8 +51,8 @@ const TxnPrvPrefix = "TxnPrv"
 func (t *PrivateOnly) InvokeTxn(ctx contractapi.TransactionContextInterface, pub_arg, private_arg string) error {
 	stub := ctx.GetStub()
 	// _ = stub.PutState("secretkey", []byte(private_arg))
-	_ = stub.PutPrivateData("ThreePeerCollection", "secretkey", []byte(private_arg))
-
+	_ = stub.PutPrivateData("TwoPeerCollection", "secretkey", []byte(private_arg))
+	_ = stub.PutState("pubarg", []byte(pub_arg))
 	return nil
 }
 
