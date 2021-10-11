@@ -23,7 +23,7 @@ class EncryptionBasedViewMgr {
         this.view_keys = {}; 
     }
 
-    InvokeTxn(func_name, pub_arg, prv_arg, reqID) { 
+    InvokeTxn(func_name, pub_arg, prv_arg, raw_req) { 
         var key = cmgr.CreateKey();
         LOGGER.info(`\tGenerate a random key ${key} for this txn`);
 
@@ -33,12 +33,12 @@ class EncryptionBasedViewMgr {
         return this.fabric_front.InvokeTxn(this.wl_contract_id, func_name, [pub_arg, secret_payload]).then((txnID)=>{
             this.txn_keys[txnID] = key;
             LOGGER.info(`\tSend a txn ${txnID} to invoke ${this.wl_contract_id} with the prv arg. `);
-            return ["", txnID, reqID];
+            return [0, txnID, raw_req];
         })
         .catch(error => {
             LOGGER.error(`Error with code ${error}`);
             // probably due to MVCC
-            return [error.transactionCode, "", reqID];
+            return [error.transactionCode, "", raw_req];
         });
     }
 
@@ -60,8 +60,11 @@ class EncryptionBasedViewMgr {
             return this.fabric_front.InvokeTxn(this.wl_contract_id, "CreateView", [view_name, view_predicate, merge_period_sec]).then(()=>{
                 return view_name;
             });;
-        } else { // revocable
+        } else if (this.mode === global.RevocableMode || this.mode === global.MockFabricMode) { // revocable
             return view_name;
+        } else {
+            LOGGER.error(`Unrecognized View Mode ${this.mode}`);
+            process.exit(1);
         }
     }
 

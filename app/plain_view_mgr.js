@@ -7,30 +7,30 @@ const LOGGER = require('loglevel');
 const cmgr = require('./crypto_mgr.js');
 const global = require('./global.js');
 
-class PrvDataViewMgr {
+class PlainViewMgr {
     // wl_contract_id : contract ID to for the real workload, i.e., supply chain
     constructor(fabric_front, mode, wl_contract_id) {
         this.fabric_front = fabric_front;
         this.mode = mode;
         this.wl_contract_id = wl_contract_id;
-        if (mode !== global.ViewInContractMode) {
-            LOGGER.error("PrvDataViewMgr only supports ViewInContract");
+        if (!(mode === global.ViewInContractMode || mode === global.MockFabricMode)) {
+            LOGGER.error("PlainViewMgr only supports ViewInContract or MockFabricMode");
         }
         this.txn_secret = {}; // txnID to request secret
         this.view_txns = {}; // view_name to a list of txnIDs
         this.view_keys = {}; // view_name to the view key
     }
 
-    InvokeTxn(func_name, pub_arg, prv_arg, reqID) {
+    InvokeTxn(func_name, pub_arg, prv_arg, raw_req) {
         return this.fabric_front.InvokeTxn(this.wl_contract_id, func_name, [pub_arg, prv_arg]).then((txnID)=>{
             this.txn_secret[txnID] = prv_arg;
             LOGGER.info(`\tSend a txn ${txnID} to invoke ${this.wl_contract_id} with the prv arg. `);
-            return ["", txnID, reqID];
+            return [0, txnID, raw_req];
         })
         .catch(error => {
             LOGGER.error(`Error with code ${error}`);
             // probably due to MVCC
-            return [error.transactionCode, "", reqID];
+            return [error.transactionCode, "", raw_req];
         });
     }
 
@@ -99,4 +99,4 @@ class PrvDataViewMgr {
     }
 }
 
-module.exports.PrvDataViewMgr = PrvDataViewMgr;
+module.exports.PlainViewMgr = PlainViewMgr;

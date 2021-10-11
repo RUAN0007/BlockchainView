@@ -8,8 +8,8 @@ const path = require('path');
 const FabricFront = require("./fabricfront").FabricFront;
 const EncryptionBasedViewMgr = require("./encryption_based_view_mgr").EncryptionBasedViewMgr;
 const HashBasedViewMgr = require("./hash_based_view_mgr").HashBasedViewMgr;
-const PrvDataViewMgr = require("./prvdata_view_mgr").PrvDataViewMgr;
-const PrvDataNoView = require("./prvdata_no_view").PrvDataNoView;
+const PlainViewMgr = require("./plain_view_mgr").PlainViewMgr;
+const PlainDataNoView = require("./plain_no_view").PlainDataNoView;
 const global = require('./global.js');
 
 const LOGGER = require('loglevel');
@@ -20,7 +20,7 @@ const CONFIDENTIAL_DATA = "SECRET_PAYLOAD";
 const CHANNEL_NAME = "viewchannel";
 var WORKLOAD_CHAINCODEID;
 
-const WL_FUNC_NAME = "InvokeTxn"; // consistent to OnChainView, secretcontract, privateonchainview, privateonly. 
+const WL_FUNC_NAME = "InvokeTxn"; // consistent to onchainview, secretcontract, noop, privateonchainview, privateonly contracts 
 
 const VIEW_NAME = "DEMOVIEW";
 
@@ -68,16 +68,16 @@ Promise.resolve().then(()=>{
     // VIEW_MGR = new EncryptionBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
 
     // VIEW_MGR = new HashBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
-    
+
 /////////////////////////////////////////////////////////////////////
     const view_mode = global.ViewInContractMode;
     WORKLOAD_CHAINCODEID = "privateonchainview";
-    VIEW_MGR = new PrvDataViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
+    VIEW_MGR = new PlainViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
 
 // ================================================================
 
     // WORKLOAD_CHAINCODEID = "privateonly";
-    // VIEW_MGR = new PrvDataNoView(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
+    // VIEW_MGR = new PlainDataNoView(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
 /////////////////////////////////////////////////////////////////////
 
     LOGGER.info("===============================================");

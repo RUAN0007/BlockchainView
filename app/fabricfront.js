@@ -6,6 +6,9 @@ const fs = require('fs');
 const fabproto6 = require('fabric-protos');
 
 const LOGGER = require('loglevel');
+const QUERY_DELAY_FIELD = "query_delay(ms)";
+const VERIFY_DELAY_FIELD = "verification_delay(ms)";
+const LEDGER_SIZE_FIELD = "ledger_size(bytes)";
 
 class FabricFront {
     constructor(profile_path, channel_name, mspId, cert_path, key_path) {
@@ -132,8 +135,12 @@ class FabricFront {
                 let end_verify = new Date();
                 total_verification_ms += end_verify - start_verify;
         }
-        return {"query_delay(ms)": total_query_ms, "verification_delay(ms)": total_verification_ms, 
-                "ledger_size(bytes)": total_storage};
+        var result = {};
+        result[QUERY_DELAY_FIELD] = total_query_ms;
+        result[VERIFY_DELAY_FIELD] = total_verification_ms;
+        result[LEDGER_SIZE_FIELD] = total_storage;
+
+        return result;
     }
 }
 
@@ -144,11 +151,13 @@ class MockFabricFront {
     }
 
     async InitNetwork() {
+        LOGGER.info("Mock initing the network");
         return this;
     }
 
     // Invoke a state-modifying txn that undergoes consensus and validation. 
     async InvokeTxn(cc_id, func_name, args) {
+        LOGGER.info(`Mock invoking ${cc_id} with function ${func_name} and args ${args}`);
         let rand_str = (Math.random() + 1).toString(36).substring(7);
         return rand_str;
     }
@@ -183,9 +192,16 @@ class MockFabricFront {
         var total_verification_ms = 0;
         var total_storage = 0;
         
-        return {"query_delay(ms)": total_query_ms, "verification_delay(ms)": total_verification_ms, 
-                "ledger_size(bytes)": total_storage};
+        var result = {};
+        result[QUERY_DELAY_FIELD] = total_query_ms;
+        result[VERIFY_DELAY_FIELD] = total_verification_ms;
+        result[LEDGER_SIZE_FIELD] = total_storage;
+
+        return result;
     }
 }
 
 module.exports.MockFabricFront = MockFabricFront;
+module.exports.QUERY_DELAY_FIELD = QUERY_DELAY_FIELD;
+module.exports.VERIFY_DELAY_FIELD = VERIFY_DELAY_FIELD;
+module.exports.LEDGER_SIZE_FIELD = LEDGER_SIZE_FIELD;

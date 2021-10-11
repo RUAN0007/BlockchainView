@@ -24,7 +24,7 @@ class HashBasedViewMgr {
         this.txn_salt = {}; // txnID to its salt
     }
 
-    InvokeTxn(func_name, pub_arg, prv_arg, reqID) { 
+    InvokeTxn(func_name, pub_arg, prv_arg, raw_req) { 
         var salt = cmgr.CreateSalt();
         LOGGER.info(`\tCreate a random salt ${salt}`);
         var secret_payload = cmgr.HashOp(prv_arg + salt);
@@ -34,12 +34,12 @@ class HashBasedViewMgr {
             this.txn_secret[txnID] = prv_arg;
             this.txn_salt[txnID] = salt;
             LOGGER.info(`\tSend a txn ${txnID} to invoke ${this.wl_contract_id} with the prv arg. `);
-            return ["", txnID, reqID];
+            return [0, txnID, raw_req];
         })
         .catch(error => {
             LOGGER.error(`Error with code ${error}`);
             // probably due to MVCC
-            return [error.transactionCode, "", reqID];
+            return [error.transactionCode, "", raw_req];
         });
     }
 
@@ -60,8 +60,11 @@ class HashBasedViewMgr {
             return this.fabric_front.InvokeTxn(this.wl_contract_id, "CreateView", [view_name, view_predicate, merge_period_sec]).then(()=>{
                 return view_name;
             });;
-        } else { // revocable
+        } else if (this.mode === global.RevocableMode || this.mode === global.MockFabricMode) { // revocable
             return view_name;
+        } else {
+            LOGGER.error(`Unrecognized View Mode ${this.mode}`);
+            process.exit(1);
         }
     }
 
