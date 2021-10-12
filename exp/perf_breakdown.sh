@@ -18,26 +18,22 @@ set -o pipefail
 
 ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
 PEER_COUNT=2
+CHANNEL_NAME="viewchannel"
 
-# The below four fields must be consistent with ../app/global.js
-REVOCABLE_MODE="revocable"
-IRREVOCABLE_MODE="irrevocable"
-VIEWINCONTRACT_MODE="view_in_contract"
-MOCK_MODE="mock_fabric"
+. env.sh
+SCRIPT_NAME=$(basename $0 .sh)
 
 function network_channel_up() {
-    channel_name="$1"
     pushd ../test-network > /dev/null 2>&1
     ./network.sh up
-    ./network.sh createChannel -c ${channel_name}
+    ./network.sh createChannel -c ${CHANNEL_NAME}
     popd  > /dev/null 2>&1
 }
 
 function deploy_chaincode() {
     pushd ../test-network > /dev/null 2>&1
-    channel_name="$1"
-    chaincode_name="$2"
-    peer_count=$3
+    chaincode_name="$1"
+    peer_count=$2
     all_org=""
     for i in $(seq ${peer_count})
     do
@@ -47,7 +43,7 @@ function deploy_chaincode() {
     function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
     endorse_policy="OR($(join_by , $all_org))"
 
-    ./network.sh deployCC -c ${channel_name} -ccl go -ccn ${chaincode_name} -ccp ../chaincodes/${chaincode_name} -ccep ${endorse_policy} -cccg ../chaincodes/${chaincode_name}/collection_config.json
+    ./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${chaincode_name} -ccp ../chaincodes/${chaincode_name} -ccep ${endorse_policy} -cccg ../chaincodes/${chaincode_name}/collection_config.json
     popd  > /dev/null 2>&1
 }
 
@@ -59,28 +55,16 @@ function network_down() {
 
 function run_exp() {
     workload_file="$1"
-    channel_name="$2"
-    hiding_scheme="$3"
-    view_mode="$4"
+    hiding_scheme="$2"
+    view_mode="$3"
+    workload_chaincodeID="$4"
     client_count=$5
 
-    network_channel_up ${channel_name}
-
-    if [[ "$view_mode" == "${REVOCABLE_MODE}" ]] ; then
-        workload_chaincodeID="secretcontract"
-        deploy_chaincode ${channel_name} ${workload_chaincodeID} ${PEER_COUNT}
-    fi
-
-    if [[ "$view_mode" == "${IRREVOCABLE_MODE}" ]] ; then
-        deploy_chaincode ${channel_name} "viewstorage" ${PEER_COUNT}
-
-        workload_chaincodeID="secretcontract"
-        deploy_chaincode ${channel_name} ${workload_chaincodeID} ${PEER_COUNT}
-    fi
-
-    if [[ "$view_mode" == "${VIEWINCONTRACT_MODE}" ]] ; then
-        workload_chaincodeID="onchainview"
-        deploy_chaincode ${channel_name} ${workload_chaincodeID} ${PEER_COUNT}
+    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
+        echo "Mock Fabric Mode does not spin up the network..."
+    else
+        network_channel_up 
+        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
     fi
 
     result_dir="result/$(date +%d-%m)"
@@ -89,18 +73,18 @@ function run_exp() {
     mkdir -p ${result_dir}
 
     echo "========================================================="
-    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}."
+    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID}."
     for i in $(seq ${client_count}) 
     do
-        log_file="${log_dir}/perf_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
         echo "    Client ${i} log at ${log_file}"
-        node supplychain.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${channel_name} ${workload_chaincodeID} > ${log_file} 2>&1 &
+        node supplychain.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
     wait
 
-    aggregated_result_file="${result_dir}/perf_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${client_count}clients"
+    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${client_count}clients"
 
     echo "=========================================================="
     echo "Aggregate client results " | tee ${aggregated_result_file}
@@ -110,7 +94,7 @@ function run_exp() {
     for i in $(seq ${client_count}) 
     do
         # Must be identical to the above
-        log_file="${log_dir}/perf_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
 
         last_line="$(tail -1 ${log_file})" 
         IFS=' ' read -ra tokens <<< "${last_line}"
@@ -129,28 +113,37 @@ function run_exp() {
     echo "Total Thruput(tps): ${total_thruput} tps, Batch Delay(ms): ${avg_batch_delay}" | tee -a ${aggregated_result_file}
     echo "=========================================================="
 
-    network_down
+    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
+        echo "Mock Fabric Mode does not turn down the network..."
+    else
+        network_down
+    fi
 }
 
 
 # The main function
 main() {
-    if [[ $# < 2 ]]; then 
-       echo "Insufficient arguments, expecting at least 2, actually $#" >&2 
-       echo "    Usage: end2end_perf.sh [workload_path] [channel_name]" >&2 
+    if [[ $# < 1 ]]; then 
+       echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
+       echo "    Usage: perf_end2end.sh [workload_path]" >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     
     workload_file="$1"
-    channel_name="$2"
+    for client_count in 2 4 8 16 32; do
+    # for client_count in 1; do
+        # Encrpytion-based ViewInContractMode
+        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${VIEWINCONTRACT_MODE}" "onchainview" ${client_count}
 
-    for hiding_scheme in "encryption" "hash" "plain"  ; do
-        for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}"; do
-            for client_count in 2 4 8 16 32; do
-                run_exp ${workload_file} ${channel_name} ${hiding_scheme} ${view_mode} ${client_count}
-            done
-        done
+        # Evaluate the encryption key generation speed by decoupling from the underneath fabric network
+        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${MOCK_MODE}" "onchainview" ${client_count}
+
+        # Evaluate the throughput only for the supply chain workload, without the add-on view managements. 
+        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "secretcontract" ${client_count}
+
+        # Evaluate the raw Fabric throughput, where transactions do nothing, i.e., no data processing at all. 
+        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "noop" ${client_count}
     done
 
     popd > /dev/null 2>&1

@@ -18,7 +18,7 @@ const { loadavg } = require('os');
 LOGGER.setDefaultLevel('info');
 
 const ORG_DIR = process.argv[2];
-const WORKLOAD_PATH = process.argv[3]; // encryption/hash/plain
+const WORKLOAD_PATH = process.argv[3]; 
 const DATA_HIDING_SCHEME = process.argv[4]; // encryption/hash/plain
 const VIEW_MODE = process.argv[5]; // irrevocable/revocable/view_in_contract/mock_fabric
 const CHANNEL_NAME = process.argv[6];
@@ -90,16 +90,16 @@ Promise.resolve().then(()=>{
 }).then((fabric_front)=>{
     FABRIC_FRONT = fabric_front;
     const viewstorage_contractID = "viewstorage"; // only used in irrevocable mode;
-    if (DATA_HIDING_SCHEME == "hash") {
+    if (DATA_HIDING_SCHEME == global.HashScheme) {
         VIEW_MGR = new HashBasedViewMgr(fabric_front, VIEW_MODE, WORKLOAD_CHAINCODEID, viewstorage_contractID);; 
 
-    } else if (DATA_HIDING_SCHEME == "encryption") {
+    } else if (DATA_HIDING_SCHEME == global.EncryptionScheme) {
         VIEW_MGR = new EncryptionBasedViewMgr(fabric_front, VIEW_MODE, WORKLOAD_CHAINCODEID, viewstorage_contractID);; 
         
-    } else if (DATA_HIDING_SCHEME == "plain") {
+    } else if (DATA_HIDING_SCHEME == global.PlainScheme) {
         VIEW_MGR = new PlainViewMgr(fabric_front, VIEW_MODE, WORKLOAD_CHAINCODEID, viewstorage_contractID);; 
     } else {
-        LOGGER.error(`Unrecognized mode ${mode}`);
+        LOGGER.error(`Unrecognized Data Hiding Scheme ${DATA_HIDING_SCHEME}`);
         process.exit(1);
     }
 

@@ -9,6 +9,7 @@ const LOGGER = require('loglevel');
 const QUERY_DELAY_FIELD = "query_delay(ms)";
 const VERIFY_DELAY_FIELD = "verification_delay(ms)";
 const LEDGER_SIZE_FIELD = "ledger_size(bytes)";
+const LEDGER_HEIGHT_FIELD = "height";
 
 class FabricFront {
     constructor(profile_path, channel_name, mspId, cert_path, key_path) {
@@ -68,7 +69,7 @@ class FabricFront {
             if (write_sets[i].key === field ) {
                 return write_sets[i].value.toString();
             } else {
-                // console.log("Writekey: ", writeSets[i].key);
+                LOGGER.debug("Writekey: ", writeSets[i].key);
             }
         }
     }
@@ -85,7 +86,7 @@ class FabricFront {
             var readSets = txnData.actions[0].payload.action.proposal_response_payload.extension.results.ns_rwset[1].rwset.reads;
             for (var i = 0; i < readSets.length; i++) {
             }
-            console.log(`read counts = ${readSets.length}, write counts = ${writeSets.length}`);
+            LOGGER.debug(`read counts = ${readSets.length}, write counts = ${writeSets.length}`);
         } else {
             // Ignore config txns
         }
@@ -117,7 +118,7 @@ class FabricFront {
         for (var blk_height = 0; blk_height < chain_height; blk_height++) {
                 let start_query = new Date();
                 const result_bytes = await this.Query('qscc', 'GetBlockByNumber', [this.channel_name, String(blk_height)] );
-                // console.log(`Pull block ${blk_height} with ${result_bytes.length} bytes`);
+                // LOGGER.info(`Pull block ${blk_height} with ${result_bytes.length} bytes`);
                 total_storage += result_bytes.length;
 
                 let end_query = new Date();
@@ -128,7 +129,7 @@ class FabricFront {
 
                 for (var index = 0; index < block.data.data.length; index++) {
                     // var channel_header = block.data.data[index].payload.header.channel_header;
-                    // console.log(`\t TxnID = ${channel_header.tx_id}`);
+                    // LOGGER.info(`\t TxnID = ${channel_header.tx_id}`);
                     // TODO: may fail for some workloads. 
                     // this.InspectTxnRW(block.data.data[index].payload.data);
                 }
@@ -139,6 +140,7 @@ class FabricFront {
         result[QUERY_DELAY_FIELD] = total_query_ms;
         result[VERIFY_DELAY_FIELD] = total_verification_ms;
         result[LEDGER_SIZE_FIELD] = total_storage;
+        result[LEDGER_HEIGHT_FIELD] = chain_height;
 
         return result;
     }
@@ -169,7 +171,7 @@ class MockFabricFront {
 
     // Inspect a txn's accessed value to mock the verification. 
     InspectTxnRW(txnData) {
-        console.log("Not implemented...");
+        LOGGER.error("Not implemented...");
         process.exit(1)
     }
 
@@ -182,7 +184,7 @@ class MockFabricFront {
     }
 
     DecodeTxn(txn_bytes) {
-        console.log("Not implemented...");
+        LOGGER.error("Not implemented...");
         process.exit(1)
     }
 
@@ -196,6 +198,7 @@ class MockFabricFront {
         result[QUERY_DELAY_FIELD] = total_query_ms;
         result[VERIFY_DELAY_FIELD] = total_verification_ms;
         result[LEDGER_SIZE_FIELD] = total_storage;
+        result[LEDGER_HEIGHT_FIELD] = 0;
 
         return result;
     }
@@ -205,3 +208,4 @@ module.exports.MockFabricFront = MockFabricFront;
 module.exports.QUERY_DELAY_FIELD = QUERY_DELAY_FIELD;
 module.exports.VERIFY_DELAY_FIELD = VERIFY_DELAY_FIELD;
 module.exports.LEDGER_SIZE_FIELD = LEDGER_SIZE_FIELD;
+module.exports.LEDGER_HEIGHT_FIELD = LEDGER_HEIGHT_FIELD;

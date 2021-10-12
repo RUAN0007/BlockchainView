@@ -70,7 +70,7 @@ cp -r fabric-samples/bin .
 cp -r fabric-samples/config . 
 
 # Make binaries accessible on $PATH
-export PATH="$(pwd)/fabric-samples/bin:${PATH}"
+export PATH="$(pwd)/bin:${PATH}"
 
 # Install front end
 npm install

@@ -13,8 +13,8 @@ class PlainViewMgr {
         this.fabric_front = fabric_front;
         this.mode = mode;
         this.wl_contract_id = wl_contract_id;
-        if (!(mode === global.ViewInContractMode || mode === global.MockFabricMode)) {
-            LOGGER.error("PlainViewMgr only supports ViewInContract or MockFabricMode");
+        if (!(mode === global.ViewInContractMode || mode === global.MockFabricMode || global.OnlyWorkloadMode)) {
+            LOGGER.error(`PlainViewMgr only supports ${global.ViewInContractMode}, ${global.MockFabricMode} or ${global.OnlyWorkloadMode}`);
         }
         this.txn_secret = {}; // txnID to request secret
         this.view_txns = {}; // view_name to a list of txnIDs
@@ -36,6 +36,11 @@ class PlainViewMgr {
 
 
     CreateView(view_name, view_predicate) {
+        if (this.mode === global.OnlyWorkloadMode) {
+            LOGGER.info(`Ignore view creations in ${global.OnlyWorkloadMode} mode`);
+            return;
+        }
+
         this.view_txns[view_name] = [];
         LOGGER.info(`\tInitialize view ${view_name}`);
 
@@ -46,12 +51,21 @@ class PlainViewMgr {
     }
 
     AppendView(view_name, txnIDs) {
+        if (this.mode === global.OnlyWorkloadMode) {
+            LOGGER.info(`Ignore view appending in ${global.OnlyWorkloadMode} mode`);
+            return;
+        }
         this.view_txns[view_name].push(...txnIDs);
         LOGGER.info(`\tAppend view ${view_name} with ${txnIDs}`);
     }
 
     // return as a Buffer type
     DistributeView(view_name, userPubKey) {
+        if (this.mode === global.OnlyWorkloadMode) {
+            LOGGER.error(`Not allow to distribute a view ${global.OnlyWorkloadMode} mode`);
+            process.exit(1);
+        }
+
         var distributedData = {};
         distributedData.view_name = view_name;
         distributedData.mode = this.mode;
@@ -81,6 +95,11 @@ class PlainViewMgr {
 
     // To be invoked at the recipient side
     OnReceive(distributedData, userPrvKey) {
+        if (this.mode === global.OnlyWorkloadMode) {
+            LOGGER.error(`Not allow to receive a view ${global.OnlyWorkloadMode} mode`);
+            process.exit(1);
+        }
+
         var view_key = cmgr.PrivateDecrypt(userPrvKey, '', distributedData.encryptedKey);
         var view_name = distributedData.view_name;
         LOGGER.info(`\tRecover the view ${view_name} to ${view_key} with the private key`);
