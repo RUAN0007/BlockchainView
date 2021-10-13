@@ -89,7 +89,7 @@ function run_exp() {
     do
         log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${i}.log"
         echo "    Client ${i} log at ${log_file}"
-        node supplychain.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
+        node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
@@ -145,7 +145,7 @@ main() {
 
     for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
         for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}" ; do
-            for client_count in 2 4 8 16 32 ; do
+            for client_count in 1 2 4 8 16 32 ; do
                 run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${client_count}
             done
         done

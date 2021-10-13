@@ -18,12 +18,14 @@ set -o pipefail
 
 ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
 PEER_COUNT=2
-CHANNEL_NAME="viewchannel"
 
 . env.sh
+
 SCRIPT_NAME=$(basename $0 .sh)
 
 function network_channel_up() {
+    echo "We only spin up a single chain. This single chain runs for all views..."
+    echo "  Can modify here to spin up multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     ./network.sh up
     ./network.sh createChannel -c ${CHANNEL_NAME}
@@ -31,6 +33,7 @@ function network_channel_up() {
 }
 
 function deploy_chaincode() {
+    echo "  Again, now we assume a single chain. This function can be edited to deploy chaincodes on multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
@@ -48,6 +51,7 @@ function deploy_chaincode() {
 }
 
 function network_down() {
+    echo "  Again, now we assume a single chain. This function can be eidted to turn down multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
@@ -55,17 +59,12 @@ function network_down() {
 
 function run_exp() {
     workload_file="$1"
-    hiding_scheme="$2"
-    view_mode="$3"
-    workload_chaincodeID="$4"
-    client_count=$5
+    client_count=$2
 
-    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
-        echo "Mock Fabric Mode does not spin up the network..."
-    else
-        network_channel_up 
-        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
-    fi
+    network_channel_up
+
+    workload_chaincodeID="txncoordinator"
+    deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
 
     result_dir="result/$(date +%d-%m)"
     log_dir="log/$(date +%d-%m)"
@@ -73,18 +72,20 @@ function run_exp() {
     mkdir -p ${result_dir}
 
     echo "========================================================="
-    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID}."
+    echo "Start launching ${client_count} client processes."
     for i in $(seq ${client_count}) 
     do
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${i}.log"
         echo "    Client ${i} log at ${log_file}"
-        node supplychain.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
+        view_count=0 # 0 implies the number of physial views is set to equal to logical views as specified in the workload. 
+
+        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIR} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
     wait
 
-    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${client_count}clients"
+    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${client_count}clients"
 
     echo "=========================================================="
     echo "Aggregate client results " | tee ${aggregated_result_file}
@@ -94,7 +95,7 @@ function run_exp() {
     for i in $(seq ${client_count}) 
     do
         # Must be identical to the above
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${i}.log"
 
         last_line="$(tail -1 ${log_file})" 
         IFS=' ' read -ra tokens <<< "${last_line}"
@@ -113,37 +114,22 @@ function run_exp() {
     echo "Total Thruput(tps): ${total_thruput} tps, Batch Delay(ms): ${avg_batch_delay}" | tee -a ${aggregated_result_file}
     echo "=========================================================="
 
-    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
-        echo "Mock Fabric Mode does not turn down the network..."
-    else
-        network_down
-    fi
+    network_down
 }
-
 
 # The main function
 main() {
     if [[ $# < 1 ]]; then 
        echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: perf_end2end.sh [workload_path]" >&2 
+       echo "    Usage: $0 [workload_path] " >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     
     workload_file="$1"
-    for client_count in 2 4 8 16 32; do
-    # for client_count in 1; do
-        # Encrpytion-based ViewInContractMode
-        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${VIEWINCONTRACT_MODE}" "onchainview" ${client_count}
 
-        # Evaluate the encryption key generation speed by decoupling from the underneath fabric network
-        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${MOCK_MODE}" "onchainview" ${client_count}
-
-        # Evaluate the throughput only for the supply chain workload, without the add-on view managements. 
-        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "secretcontract" ${client_count}
-
-        # Evaluate the raw Fabric throughput, where transactions do nothing, i.e., no data processing at all. 
-        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "noop" ${client_count}
+    for client_count in 1 2 4 8 16 32 ; do
+        run_exp ${workload_file} ${client_count}
     done
 
     popd > /dev/null 2>&1

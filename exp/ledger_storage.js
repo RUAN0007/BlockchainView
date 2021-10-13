@@ -14,7 +14,7 @@ const CHANNEL_NAME = process.argv[3];
 LOGGER.info("Parameters: ")
 LOGGER.info(`\t ORG_DIR : ${ORG_DIR}`);
 LOGGER.info(`\t CHANNEL_NAME : ${CHANNEL_NAME}`);
-LOGGER.info(`=============================================`);
+LOGGER.info(`---------------------------------------------`);
 
 Promise.resolve().then(()=>{
     var fabric_front;
@@ -32,8 +32,6 @@ Promise.resolve().then(()=>{
 }).catch((err)=>{
     LOGGER.error("Invocation fails with err msg: " + err.stack);
 }).finally(()=>{
-    LOGGER.info(`=============================================`);
-    LOGGER.info(`Finish.`);
     process.exit(0)
 })
 ;

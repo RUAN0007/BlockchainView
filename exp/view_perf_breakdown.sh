@@ -16,26 +16,22 @@ set -o pipefail
 [[ -n "${__SCRIPT_DIR+x}" ]] || readonly __SCRIPT_DIR="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- $0)"
 
+ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
+PEER_COUNT=2
+CHANNEL_NAME="viewchannel"
+
 . env.sh
 SCRIPT_NAME=$(basename $0 .sh)
 
 function network_channel_up() {
-    peer_count=$1
-
-    if (( ${peer_count} == 2 )); then
-        pushd ../test-network > /dev/null 2>&1
-        ./network.sh up
-        ./network.sh createChannel -c ${CHANNEL_NAME}
-        popd  > /dev/null 2>&1
-
-        ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
-    else
-       echo '../test-network/ is hardcoded with two peers in its docker network. For more peers, prepare another similar directory and set correct ${ORG_DIR}'
-       exit 1
-    fi
+    pushd ../test-network > /dev/null 2>&1
+    ./network.sh up
+    ./network.sh createChannel -c ${CHANNEL_NAME}
+    popd  > /dev/null 2>&1
 }
 
 function deploy_chaincode() {
+    pushd ../test-network > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
     all_org=""
@@ -43,43 +39,33 @@ function deploy_chaincode() {
     do
         all_org="$all_org 'Org${i}MSP.peer'"
     done
+
     function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
     endorse_policy="OR($(join_by , $all_org))"
 
-    if (( ${peer_count} == 2 )); then
-        pushd ../test-network > /dev/null 2>&1
-        ./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${chaincode_name} -ccp ../chaincodes/${chaincode_name} -ccep ${endorse_policy} -cccg ../chaincodes/${chaincode_name}/collection_config.json
-        popd  > /dev/null 2>&1
-    else
-       echo '../test-network/ is hardcoded with two peers in its docker network. For more peers, prepare another similar directory and set correct ${ORG_DIR}'
-       exit 1
-    fi
+    ./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${chaincode_name} -ccp ../chaincodes/${chaincode_name} -ccep ${endorse_policy} -cccg ../chaincodes/${chaincode_name}/collection_config.json
+    popd  > /dev/null 2>&1
 }
 
 function network_down() {
-    peer_count=$1
-    if (( ${peer_count} == 2 )); then
-        pushd ../test-network > /dev/null 2>&1
-        ./network.sh down
-        popd  > /dev/null 2>&1
-    else
-       echo '../test-network/ is hardcoded with two peers in its docker network. For more peers, prepare another similar directory and set correct ${ORG_DIR}'
-       exit 1
-    fi
+    pushd ../test-network > /dev/null 2>&1
+    ./network.sh down
+    popd  > /dev/null 2>&1
 }
 
 function run_exp() {
     workload_file="$1"
     hiding_scheme="$2"
-    workload_chaincodeID="$3"  
-    peer_count=$4
+    view_mode="$3"
+    workload_chaincodeID="$4"
+    client_count=$5
 
-    view_mode="${VIEWINCONTRACT_MODE}"
-    client_count=32
-
-    network_channel_up ${peer_count}
-
-    deploy_chaincode ${workload_chaincodeID} ${peer_count}
+    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
+        echo "Mock Fabric Mode does not spin up the network..."
+    else
+        network_channel_up 
+        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
+    fi
 
     result_dir="result/$(date +%d-%m)"
     log_dir="log/$(date +%d-%m)"
@@ -87,10 +73,10 @@ function run_exp() {
     mkdir -p ${result_dir}
 
     echo "========================================================="
-    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID} ."
+    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID}."
     for i in $(seq ${client_count}) 
     do
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
         echo "    Client ${i} log at ${log_file}"
         node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
     done
@@ -98,7 +84,7 @@ function run_exp() {
     echo "Wait for finishing client processes"
     wait
 
-    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}"
+    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${client_count}clients"
 
     echo "=========================================================="
     echo "Aggregate client results " | tee ${aggregated_result_file}
@@ -108,7 +94,7 @@ function run_exp() {
     for i in $(seq ${client_count}) 
     do
         # Must be identical to the above
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${workload_chaincodeID}_${i}.log"
 
         last_line="$(tail -1 ${log_file})" 
         IFS=' ' read -ra tokens <<< "${last_line}"
@@ -127,7 +113,11 @@ function run_exp() {
     echo "Total Thruput(tps): ${total_thruput} tps, Batch Delay(ms): ${avg_batch_delay}" | tee -a ${aggregated_result_file}
     echo "=========================================================="
 
-    network_down ${peer_count}
+    if [[ "$view_mode" == "${MOCK_MODE}" ]] ; then
+        echo "Mock Fabric Mode does not turn down the network..."
+    else
+        network_down
+    fi
 }
 
 
@@ -135,22 +125,25 @@ function run_exp() {
 main() {
     if [[ $# < 1 ]]; then 
        echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: view_scalability.sh [workload_path]" >&2 
+       echo "    Usage: perf_end2end.sh [workload_path]" >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     
     workload_file="$1"
+    for client_count in 2 4 8 16 32; do
+    # for client_count in 1; do
+        # Encrpytion-based ViewInContractMode
+        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${VIEWINCONTRACT_MODE}" "onchainview" ${client_count}
 
-    for peer_count in 3 5 7 9 ; do
-        # Protect the secret data by encryption and store the encrypted as a transaction's public part. 
-        run_exp ${workload_file}  "${ENCRYPTION_SCHEME}" "onchainview" ${peer_count}
+        # Evaluate the encryption key generation speed by decoupling from the underneath fabric network
+        run_exp ${workload_file} "${ENCRYPTION_SCHEME}" "${MOCK_MODE}" "onchainview" ${client_count}
 
-        # Store the plain secret as a transaction's private part. 
-        run_exp ${workload_file} "${PLAIN_SCHEME}" "privateonchainview" ${peer_count}
+        # Evaluate the throughput only for the supply chain workload, without the add-on view managements. 
+        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "secretcontract" ${client_count}
 
-        # Store the plain secret as a transaction's private part, but no view manamgent in contracts. 
-        run_exp ${workload_file} "${PLAIN_SCHEME}" "privateonly" ${peer_count}
+        # Evaluate the raw Fabric throughput, where transactions do nothing, i.e., no data processing at all. 
+        run_exp ${workload_file} "${PLAIN_SCHEME}" "${ONLYWORKLOAD_MODE}" "noop" ${client_count}
     done
 
     popd > /dev/null 2>&1

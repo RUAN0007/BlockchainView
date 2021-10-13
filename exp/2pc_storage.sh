@@ -21,7 +21,11 @@ PEER_COUNT=2
 
 . env.sh
 
+SCRIPT_NAME=$(basename $0 .sh)
+
 function network_channel_up() {
+    echo "We only spin up a single chain. This single chain runs for all views..."
+    echo "  Can modify here to spin up multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     ./network.sh up
     ./network.sh createChannel -c ${CHANNEL_NAME}
@@ -29,6 +33,7 @@ function network_channel_up() {
 }
 
 function deploy_chaincode() {
+    echo "  Again, now we assume a single chain. This function can be edited to deploy chaincodes on multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
@@ -46,6 +51,7 @@ function deploy_chaincode() {
 }
 
 function network_down() {
+    echo "  Again, now we assume a single chain. This function can be eidted to turn down multiple chains. "
     pushd ../test-network > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
@@ -53,29 +59,13 @@ function network_down() {
 
 function run_exp() {
     workload_file="$1"
-    hiding_scheme="$2"
-    view_mode="$3"
-    view_count=$4
+    view_count="$2"
     client_count=32
 
     network_channel_up
 
-    if [[ "$view_mode" == "${REVOCABLE_MODE}" ]] ; then
-        workload_chaincodeID="secretcontract"
-        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
-    fi
-
-    if [[ "$view_mode" == "${IRREVOCABLE_MODE}" ]] ; then
-        deploy_chaincode "viewstorage" ${PEER_COUNT}
-
-        workload_chaincodeID="secretcontract"
-        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
-    fi
-
-    if [[ "$view_mode" == "${VIEWINCONTRACT_MODE}" ]] ; then
-        workload_chaincodeID="onchainview"
-        deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
-    fi
+    workload_chaincodeID="txncoordinator"
+    deploy_chaincode ${workload_chaincodeID} ${PEER_COUNT}
 
     result_dir="result/$(date +%d-%m)"
     log_dir="log/$(date +%d-%m)"
@@ -83,41 +73,42 @@ function run_exp() {
     mkdir -p ${result_dir}
 
     echo "========================================================="
-    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, # of views : ${view_count}."
+    echo "Start launching ${client_count} client processes. # of views : ${view_count}."
     for i in $(seq ${client_count}) 
     do
-        log_file="${log_dir}/storage_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${view_count}views_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${view_count}views_${i}.log"
         echo "    Client ${i} log at ${log_file}"
-        node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} ${view_count} > ${log_file} 2>&1 &
+
+        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIR} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
     wait
 
-    result_file="${result_dir}/storage_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${view_count}views"
+    result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${view_count}views"
 
-    echo "Ledger Size: " | tee ${result_file}
+    echo "=========================================================="
+    echo "Here we assume a single chain. May modify here when employing multiple chains."
+    echo "Ledger Storage results " | tee ${result_file}
     node ledger_storage.js ${ORG_DIR} ${CHANNEL_NAME} | tee -a ${result_file}
+    echo "=========================================================="
 
     network_down
 }
-
 
 # The main function
 main() {
     if [[ $# < 1 ]]; then 
        echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: view_storage.sh [workload_path] " >&2 
+       echo "    Usage: $0 [workload_path] " >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
+    
+    workload_file="$1"
 
-    for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
-        for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}" ; do
-            for view_count in 1 4 7 14 ; do
-                run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${view_count}
-            done
-        done
+    for view_count in 1 4 7 14 ; do
+        run_exp ${workload_file} ${view_count}
     done
 
     popd > /dev/null 2>&1
