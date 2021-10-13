@@ -58,21 +58,21 @@ Promise.resolve().then(()=>{
     // const view_mode = global.ViewInContractMode;
     // WORKLOAD_CHAINCODEID = "onchainview";
 
-    // const view_mode = global.RevocableMode
-    // WORKLOAD_CHAINCODEID = "secretcontract";
+    const view_mode = global.RevocableMode
+    WORKLOAD_CHAINCODEID = "secretcontract";
 
     // const view_mode = global.IrrevocableMode
     // WORKLOAD_CHAINCODEID = "secretcontract";
     // const viewstorage_contractID = "viewstorage"; // only used in irrevocable mode
 // ================================================================
-    // VIEW_MGR = new EncryptionBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
+    VIEW_MGR = new EncryptionBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
 
     // VIEW_MGR = new HashBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
 
 /////////////////////////////////////////////////////////////////////
-    const view_mode = global.ViewInContractMode;
-    WORKLOAD_CHAINCODEID = "privateonchainview";
-    VIEW_MGR = new PlainViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
+    // const view_mode = global.ViewInContractMode;
+    // WORKLOAD_CHAINCODEID = "privateonchainview";
+    // VIEW_MGR = new PlainViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
 
 // ================================================================
 

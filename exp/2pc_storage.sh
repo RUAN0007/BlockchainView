@@ -88,7 +88,7 @@ function run_exp() {
     result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${view_count}views"
 
     echo "=========================================================="
-    echo "Here we assume a single chain. May modify here when employing multiple chains."
+    echo "Here we assume a single chain. May modify here to sum up the ledger size of all chains when employing multiple chains."
     echo "Ledger Storage results " | tee ${result_file}
     node ledger_storage.js ${ORG_DIR} ${CHANNEL_NAME} | tee -a ${result_file}
     echo "=========================================================="

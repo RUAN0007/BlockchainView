@@ -87,10 +87,10 @@ function run_exp() {
     mkdir -p ${result_dir}
 
     echo "========================================================="
-    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID} ."
+    echo "Start launching ${client_count} client processes with data hiding scheme : ${hiding_scheme}, view mode : ${view_mode}, workload_chaincodeID : ${workload_chaincodeID}, # of peers : ${peer_count} ."
     for i in $(seq ${client_count}) 
     do
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${peer_count}peers_${i}.log"
         echo "    Client ${i} log at ${log_file}"
         node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} > ${log_file} 2>&1 &
     done
@@ -98,7 +98,7 @@ function run_exp() {
     echo "Wait for finishing client processes"
     wait
 
-    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}"
+    aggregated_result_file="${result_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${peer_count}peers"
 
     echo "=========================================================="
     echo "Aggregate client results " | tee ${aggregated_result_file}
@@ -108,7 +108,7 @@ function run_exp() {
     for i in $(seq ${client_count}) 
     do
         # Must be identical to the above
-        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${i}.log"
+        log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${hiding_scheme}_${workload_chaincodeID}_${peer_count}peers_${i}.log"
 
         last_line="$(tail -1 ${log_file})" 
         IFS=' ' read -ra tokens <<< "${last_line}"

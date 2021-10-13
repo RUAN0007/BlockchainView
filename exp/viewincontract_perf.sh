@@ -122,18 +122,17 @@ function run_exp() {
 
 # The main function
 main() {
-    if [[ $# < 0 ]]; then 
-       echo "Insufficient arguments, expecting at least 0, actually $#" >&2 
-       echo "    Usage: perf_viewincontract.sh " >&2 
+    if [[ $# < 1 ]]; then 
+       echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
+       echo "    Usage: perf_viewincontract.sh <selectivity>" >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
+    selectivity="$1"
 
-    for selectivity in "single" "all" ; do
-        for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
-            for view_count in 1 10 50 100 ; do
-                run_exp ${hiding_scheme} ${view_count} ${selectivity}
-            done
+    for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
+        for view_count in 1 10 50 100 ; do
+            run_exp ${hiding_scheme} ${view_count} ${selectivity}
         done
     done
 

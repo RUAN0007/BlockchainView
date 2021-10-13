@@ -25,14 +25,6 @@ func (t *SecretContract) InvokeTxn(ctx contractapi.TransactionContextInterface, 
 	return nil
 }
 
-func (t *SecretContract) InvokeTxnWithPrvData(ctx contractapi.TransactionContextInterface, pub_arg, private_arg string) error {
-	stub := ctx.GetStub()
-	// _ = stub.PutState("secretkey", []byte(private_arg))
-	_ = stub.PutPrivateData("ThreePeerCollection", "secretkey", []byte(private_arg))
-	_ = stub.PutState("pubarg", []byte(pub_arg))
-	return nil
-}
-
 func main() {
 
 	chaincode, err := contractapi.NewChaincode(new(SecretContract))
