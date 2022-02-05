@@ -12,6 +12,7 @@ export DNS_SUFFIX="example.com"
 
 # Below two must be consistent
 export ORG_DNS_NAMES=( "org1.${DNS_SUFFIX}" "org2.${DNS_SUFFIX}" )
+export ORG_MSPS=( "Org1MSP" "Org2MSP" )
 export PEER_DNS_NAMES=( "peer0.org1.${DNS_SUFFIX}" "peer0.org2.${DNS_SUFFIX}" )
 
 export ORDERER_INSTANCES=( "orderer" )

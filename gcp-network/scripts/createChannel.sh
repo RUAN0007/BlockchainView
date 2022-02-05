@@ -96,29 +96,29 @@ setAnchorPeer() {
 	echo
 }
 
-# FABRIC_CFG_PATH=${PWD}/configtx
+FABRIC_CFG_PATH=${PWD}/configtx
 
-# ## Create channeltx
-# infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
-# createChannelTx
+## Create channeltx
+infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
+createChannelTx
 
-# peer_count=${#PEER_INSTANCES[@]}
-# for i in $(seq $((peer_count)))
-# do
-# 	infoln "Generating AnchorTx for each Org{$i}"
-# 	createAnchorTx $i
-# done
+peer_count=${#PEER_INSTANCES[@]}
+for i in $(seq $((peer_count)))
+do
+	infoln "Generating AnchorTx for each Org{$i}"
+	createAnchorTx $i
+done
 
 
 FABRIC_CFG_PATH=$PWD/../config/
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
-# ## Create channel
-# infoln "Creating channel ${CHANNEL_NAME}"
-# createChannel
-# successln "Channel '$CHANNEL_NAME' created"
+## Create channel
+infoln "Creating channel ${CHANNEL_NAME}"
+createChannel
+successln "Channel '$CHANNEL_NAME' created"
 
-## Join all the peers to the channel
+# Join all the peers to the channel
 peer_count=${#PEER_INSTANCES[@]}
 for i in $(seq $((peer_count)))
 do
@@ -127,12 +127,12 @@ do
 done
 successln "Channel '$CHANNEL_NAME' joined"
 
-# ## Set the anchor peers for each org in the channel
-# peer_count=${#PEER_INSTANCES[@]}
-# for i in $(seq $((peer_count)))
-# do
-# 	infoln "Setting anchor peer for org${i}..."
-# 	setAnchorPeer ${i}
-# done
+## Set the anchor peers for each org in the channel
+peer_count=${#PEER_INSTANCES[@]}
+for i in $(seq $((peer_count)))
+do
+	infoln "Setting anchor peer for org${i}..."
+	setAnchorPeer ${i}
+done
 
-# successln "Anchor Peer updated..."
+successln "Anchor Peer updated..."

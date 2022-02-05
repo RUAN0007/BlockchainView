@@ -29,6 +29,9 @@ function gcp_network_new() {
         --allow tcp:22,tcp:3389,tcp:7050,tcp:7051,tcp:7052,icmp \
         --quiet
 
+}
+
+function gcp_instance_up() {
     cecho "GREEN" "Creating a DNS zone ${DNS_ZONE} with suffix ${DNS_SUFFIX} for the network..."
     gcloud dns managed-zones create ${DNS_ZONE} -q \
     --description="for running fabric" \
@@ -36,9 +39,6 @@ function gcp_network_new() {
     --networks=${GCP_NETWORK} \
     --visibility=private
 
-}
-
-function gcp_instance_up() {
     local peer_count=${#PEER_INSTANCES[@]}
     cecho "GREEN" "Creating ${peer_count} peer instances..."
     for i in $(seq 0 $((peer_count-1)))
@@ -117,11 +117,13 @@ function gcp_instance_up() {
         gcloud dns record-sets transaction add "${orderer_internal_ip}" --name="${orderer_dns_name}" --ttl="3600" --type="A" --zone="${DNS_ZONE}"
     done
     gcloud dns record-sets transaction execute --zone="${DNS_ZONE}"
-    exit
+
+    # Flush local dns cache 
+    sudo systemd-resolve --flush-caches
 }
 
 
-function gcp_intance_down() {
+function gcp_instance_down() {
     cecho "GREEN" "Delete instances and remove DNS records..."
     gcloud dns record-sets transaction start --zone="${DNS_ZONE}"
 

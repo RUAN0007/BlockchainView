@@ -38,7 +38,6 @@ setOrdererGlobals() {
   echo "Using orderer ${orderer_id}"
 
   export ORDERER_DOMAIN=${ORDERER_DNS_NAMES[$((orderer_id-1))]}
-  local orderer_ip="$(sed -n ${orderer_id}p ${ORDERER_EXTERNAL_IP_PATH})" # idx starts from 1 in sed. 
 
 	export ORDERER_CA=${PWD}/organizations/ordererOrganizations/${DNS_SUFFIX}/orderers/${ORDERER_DOMAIN}/msp/tlscacerts/tlsca.${DNS_SUFFIX}-cert.pem
   export ORDERER_ADDR=${ORDERER_DOMAIN}:7050
@@ -114,8 +113,8 @@ setOrdererGlobals() {
 # Helper function that sets the peer connection parameters for a chaincode
 # operation
 parsePeerConnectionParameters() {
-  PEER_CONN_PARMS=""
-  PEERS=""
+  export PEER_CONN_PARMS=""
+  export PEERS=""
   while [ "$#" -gt 0 ]; do
     setPeerGlobals $1
     PEER="peer0.org$1"

@@ -136,7 +136,7 @@ function createConsortium() {
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
   set -x
-  configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock $GENESIS_BLK
+  configtxgen -profile TwoOrgsOrdererGenesis -channelID system-channel -outputBlock $LOCAL_GENESIS_BLK
   res=$?
   { set +x; } 2>/dev/null
   if [ $res -ne 0 ]; then
@@ -279,6 +279,7 @@ function networkUp() {
       local peer_zone=${PEER_ZONES[$i]}
       local peer_dns_name=${PEER_DNS_NAMES[$i]}
       local org_dns_name=${ORG_DNS_NAMES[$i]}
+      local org_msg=${ORG_MSPS[$i]}
 
       local instance_home_dir=$(gcloud compute ssh  ${peer_instance} --zone ${peer_zone}  -- 'echo ${HOME}' | tr -d '\r') # use single quote to avoid var substitution locally. 
 
@@ -297,7 +298,7 @@ function networkUp() {
         CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
         CORE_PEER_GOSSIP_BOOTSTRAP=${peer_dns_name}:7051
         CORE_PEER_GOSSIP_EXTERNALENDPOINT=${peer_dns_name}:7051
-        CORE_PEER_LOCALMSPID=Org1MSP
+        CORE_PEER_LOCALMSPID=${org_msg}
         CORE_OPERATIONS_LISTENADDRESS=0.0.0.0:17051
         CORE_PEER_MSPCONFIGPATH=${instance_home_dir}/${REMOTE_PEER_MSP_DIR}
         CORE_PEER_FILESYSTEMPATH=${instance_home_dir}/${REMOTE_PEER_DATA_DIR}
@@ -309,8 +310,6 @@ function networkUp() {
       gcloud compute ssh  --zone ${peer_zone} ${peer_instance} -- "$(echo "$cmd" | tr '\n' ' ')" &
   done
   infoln "Wait for 30s for Fabric processes to fully launch..."
-  sleep 30s
-  exit 1
 }
 
 
@@ -378,7 +377,7 @@ OS_ARCH=$(echo "$(uname -s | tr '[:upper:]' '[:lower:]' | sed 's/mingw64_nt.*/wi
 CRYPTO="cryptogen"
 # timeout duration - the duration the CLI should wait for a response from
 # another container before giving up
-MAX_RETRY=5
+MAX_RETRY=2
 # default for delay between commands
 CLI_DELAY=3
 # channel name defaults to "mychannel"

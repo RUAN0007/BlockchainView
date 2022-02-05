@@ -16,9 +16,9 @@ gcloud beta compute instances create fabriccli \
 - `gcloud auth login`
 - add ssh key to github
 - download this repo
-- download fabric binaries and dockers
 - download golang
-- node
+- download fabric binaries and dockers
+- download node and npm
 ```
 
 # Per-experimental-set
