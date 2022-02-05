@@ -16,8 +16,8 @@ export PEER_DNS_NAMES=( "peer0.org1.${DNS_SUFFIX}" "peer0.org2.${DNS_SUFFIX}" )
 
 export ORDERER_INSTANCES=( "orderer" )
 export ORDERER_DNS_NAMES=( "orderer.${DNS_SUFFIX}" )
-# export ORDERER_INSTANCES=( "orderer0" "orderer1" "orderer2" )
-# export ORDERER_DNS_NAMES=("orderer0.${DNS_SUFFIX}" "orderer1.${DNS_SUFFIX}" "orderer2.${DNS_SUFFIX}")
+# export ORDERER_INSTANCES=( "orderer1" "orderer2" "orderer3" )
+# export ORDERER_DNS_NAMES=("orderer1.${DNS_SUFFIX}" "orderer2.${DNS_SUFFIX}" "orderer3.${DNS_SUFFIX}")
 
 export PEER_INTERNAL_IP_PATH="./peer_internal_ip"
 export ORDERER_INTERNAL_IP_PATH="./orderer_internal_ip"

@@ -10,7 +10,7 @@ MAX_RETRY="$3"
 VERBOSE="$4"
 : ${CHANNEL_NAME:="mychannel"}
 : ${DELAY:="3"}
-: ${MAX_RETRY:="5"}
+: ${MAX_RETRY:="1"}
 : ${VERBOSE:="false"}
 
 if [ ! -d "channel-artifacts" ]; then
@@ -22,18 +22,26 @@ createChannelTx() {
 	configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 	res=$?
 	{ set +x; } 2>/dev/null
-  verifyResult $res "Failed to generate channel configuration transaction..."
+	verifyResult $res "Failed to generate channel configuration transaction..."
 }
 
+createAnchorTx() {
+	local peer_count=${#PEER_INSTANCES[@]}
+	setPeerGlobals $1
+	configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/${CORE_PEER_LOCALMSPID}_anchors.tx -channelID $CHANNEL_NAME -asOrg ${CORE_PEER_LOCALMSPID}
+}
+
+
 createChannel() {
-	setGlobals 1
+	setPeerGlobals 1
+	setOrdererGlobals 1
 	# Poll in case the raft leader is not set yet
 	local rc=1
 	local COUNTER=1
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 		sleep $DELAY
 		set -x
-		peer channel create -o localhost:7050 -c $CHANNEL_NAME --ordererTLSHostnameOverride orderer.example.com -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock $BLOCKFILE --tls --cafile $ORDERER_CA >&log.txt
+		peer channel create -o ${ORDERER_ADDR} -c ${CHANNEL_NAME} --ordererTLSHostnameOverride ${ORDERER_DOMAIN} -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock $BLOCKFILE --tls --cafile ${ORDERER_CA} >&log.txt
 		res=$?
 		{ set +x; } 2>/dev/null
 		let rc=$res
@@ -45,18 +53,18 @@ createChannel() {
 
 # joinChannel ORG
 joinChannel() {
-  FABRIC_CFG_PATH=$PWD/../config/
-  ORG=$1
-  setGlobals $ORG
+	FABRIC_CFG_PATH=$PWD/../config/
+	ORG=$1
+	setPeerGlobals ${ORG}
 	local rc=1
 	local COUNTER=1
 	## Sometimes Join takes time, hence retry
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-    sleep $DELAY
-    set -x
-    peer channel join -b $BLOCKFILE >&log.txt
-    res=$?
-    { set +x; } 2>/dev/null
+		sleep $DELAY
+		set -x
+		peer channel join -b $BLOCKFILE >&log.txt
+		res=$?
+		{ set +x; } 2>/dev/null
 		let rc=$res
 		COUNTER=$(expr $COUNTER + 1)
 	done
@@ -65,34 +73,66 @@ joinChannel() {
 }
 
 setAnchorPeer() {
-  ORG=$1
-  docker exec cli ./scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME 
+	ORG=$1
+	setPeerGlobals $ORG
+	setOrdererGlobals 1
+	
+	local rc=1
+	local COUNTER=1
+	## Sometimes Join takes time, hence retry
+	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
+		sleep $DELAY
+		set -x
+		peer channel update -o ${ORDERER_ADDR} -c $CHANNEL_NAME --ordererTLSHostnameOverride ${ORDERER_DOMAIN} -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}_anchors.tx --tls --cafile $ORDERER_CA >&log.txt
+		res=$?
+		set +x
+		let rc=$res
+		COUNTER=$(expr $COUNTER + 1)
+	done
+	cat log.txt
+	verifyResult $res "Anchor peer update failed"
+	echo "===================== Anchor peers updated for org '$CORE_PEER_LOCALMSPID' on channel '$CHANNEL_NAME' ===================== "
+	sleep $DELAY
+	echo
 }
 
-FABRIC_CFG_PATH=${PWD}/configtx
+# FABRIC_CFG_PATH=${PWD}/configtx
 
-## Create channeltx
-infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
-createChannelTx
+# ## Create channeltx
+# infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
+# createChannelTx
+
+# peer_count=${#PEER_INSTANCES[@]}
+# for i in $(seq $((peer_count)))
+# do
+# 	infoln "Generating AnchorTx for each Org{$i}"
+# 	createAnchorTx $i
+# done
+
 
 FABRIC_CFG_PATH=$PWD/../config/
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
-## Create channel
-infoln "Creating channel ${CHANNEL_NAME}"
-createChannel
-successln "Channel '$CHANNEL_NAME' created"
+# ## Create channel
+# infoln "Creating channel ${CHANNEL_NAME}"
+# createChannel
+# successln "Channel '$CHANNEL_NAME' created"
 
 ## Join all the peers to the channel
-infoln "Joining org1 peer to the channel..."
-joinChannel 1
-infoln "Joining org2 peer to the channel..."
-joinChannel 2
-
-## Set the anchor peers for each org in the channel
-infoln "Setting anchor peer for org1..."
-setAnchorPeer 1
-infoln "Setting anchor peer for org2..."
-setAnchorPeer 2
-
+peer_count=${#PEER_INSTANCES[@]}
+for i in $(seq $((peer_count)))
+do
+	infoln "Joining org${i} peer to the channel..."
+	joinChannel ${i}
+done
 successln "Channel '$CHANNEL_NAME' joined"
+
+# ## Set the anchor peers for each org in the channel
+# peer_count=${#PEER_INSTANCES[@]}
+# for i in $(seq $((peer_count)))
+# do
+# 	infoln "Setting anchor peer for org${i}..."
+# 	setAnchorPeer ${i}
+# done
+
+# successln "Anchor Peer updated..."

@@ -18,14 +18,15 @@ IFS=$'\t\n'    # Split on newlines and tabs (but not on spaces)
 
 . ./env.sh
 
-function gcp_up() {
+function gcp_network_new() {
     cecho "GREEN" "Creating a network ${GCP_NETWORK}..."
     gcloud compute networks create ${GCP_NETWORK} --bgp-routing-mode=global -q
 
     cecho "GREEN" "Creating a firewall rule ${FIREWALL_RULENAME} for the network..."
+    # three tcp 705x ports for fabric. 
     gcloud compute firewall-rules create ${FIREWALL_RULENAME} \
         --network ${GCP_NETWORK} \
-        --allow tcp:22,tcp:3389,icmp \
+        --allow tcp:22,tcp:3389,tcp:7050,tcp:7051,tcp:7052,icmp \
         --quiet
 
     cecho "GREEN" "Creating a DNS zone ${DNS_ZONE} with suffix ${DNS_SUFFIX} for the network..."
@@ -35,7 +36,9 @@ function gcp_up() {
     --networks=${GCP_NETWORK} \
     --visibility=private
 
-    
+}
+
+function gcp_instance_up() {
     local peer_count=${#PEER_INSTANCES[@]}
     cecho "GREEN" "Creating ${peer_count} peer instances..."
     for i in $(seq 0 $((peer_count-1)))
@@ -118,7 +121,7 @@ function gcp_up() {
 }
 
 
-function gcp_down() {
+function gcp_intance_down() {
     cecho "GREEN" "Delete instances and remove DNS records..."
     gcloud dns record-sets transaction start --zone="${DNS_ZONE}"
 
@@ -158,6 +161,9 @@ function gcp_down() {
 
     cecho "GREEN" "Remove DNS zone ${DNS_ZONE}..."
     gcloud dns managed-zones delete --quiet ${DNS_ZONE}
+}
+
+function gcp_network_delete() {
 
     cecho "GREEN" "Remove Firewall rule ${FIREWALL_RULENAME}..."
     gcloud compute firewall-rules delete --quiet ${FIREWALL_RULENAME}
@@ -170,15 +176,19 @@ function gcp_down() {
 main() {
     if (( $# < 1 )); then 
        echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: $0 [up|down]" >&2 
+       echo "    Usage: $0 [network_new|network_delete|instance_up|instance_down]" >&2 
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
 
-    if [[ $1 == "up" ]]; then
-        gcp_up 
-    elif [[ $1 == "down" ]]; then
-        gcp_down
+    if [[ $1 == "network_new" ]]; then
+        gcp_network_new
+    elif [[ $1 == "network_delete" ]]; then
+        gcp_network_delete
+    elif [[ $1 == "instance_up" ]]; then
+        gcp_instance_up
+    elif [[ $1 == "instance_down" ]]; then
+        gcp_instance_down
     else
         echo "Unrecognized cmd $1" 
         exit 1

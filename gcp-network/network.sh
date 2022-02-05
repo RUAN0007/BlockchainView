@@ -200,13 +200,13 @@ function networkUp() {
 
       gcloud compute ssh --ssh-flag="-t" --zone ${orderer_zone} ${orderer_instance} --quiet -- "mkdir -p ${REMOTE_ORDERER_DIR} ${REMOTE_ORDERER_DATA_DIR} ${REMOTE_ORDERER_CONSENSUS_WAL_DIR} ${REMOTE_ORDERER_CONSENSUS_SNAP_DIR}"
 
-      gcloud compute scp --recurse ${LOCAL_GENESIS_BLK} ${orderer_instance}:${REMOTE_GENESIS_BLK}  --zone=${orderer_zone} --quiet &
+      gcloud compute scp --scp-flag=-q  --recurse ${LOCAL_GENESIS_BLK} ${orderer_instance}:${REMOTE_GENESIS_BLK}  --zone=${orderer_zone} --quiet &
 
       local local_msp_dir="organizations/ordererOrganizations/example.com/orderers/${orderer_dns_name}/msp"
-      gcloud compute scp --recurse ${local_msp_dir} ${orderer_instance}:${REMOTE_ORDERER_MSP_DIR} --zone=${orderer_zone} --quiet &
+      gcloud compute scp --scp-flag=-q  --recurse ${local_msp_dir} ${orderer_instance}:${REMOTE_ORDERER_MSP_DIR} --zone=${orderer_zone} --quiet &
 
       local local_tls_dir="organizations/ordererOrganizations/example.com/orderers/${orderer_dns_name}/tls"
-      gcloud compute scp --recurse --zone=${orderer_zone} ${local_tls_dir} ${orderer_instance}:${REMOTE_ORDERER_TLS_DIR} --zone=${orderer_zone} --quiet &
+      gcloud compute scp --scp-flag=-q  --recurse --zone=${orderer_zone} ${local_tls_dir} ${orderer_instance}:${REMOTE_ORDERER_TLS_DIR} --zone=${orderer_zone} --quiet &
   done
 
   local peer_count=${#PEER_INSTANCES[@]}
@@ -219,10 +219,10 @@ function networkUp() {
       gcloud compute ssh --ssh-flag="-t" --zone ${peer_zone} ${peer_instance} --quiet -- "mkdir -p ${REMOTE_PEER_DIR} ${REMOTE_PEER_DATA_DIR}"
 
       local local_msp_dir="organizations/peerOrganizations/${org_dns_name}/peers/${peer_dns_name}/msp"
-      gcloud compute scp --recurse ${local_msp_dir} ${peer_instance}:${REMOTE_PEER_MSP_DIR} --zone=${peer_zone} --quiet &
+      gcloud compute scp --scp-flag=-q  --recurse ${local_msp_dir} ${peer_instance}:${REMOTE_PEER_MSP_DIR} --zone=${peer_zone} --quiet &
 
       local local_tls_dir="organizations/peerOrganizations/${org_dns_name}/peers/${peer_dns_name}/tls"
-      gcloud compute scp --recurse ${local_tls_dir} ${peer_instance}:${REMOTE_PEER_TLS_DIR} --zone=${peer_zone} --quiet &
+      gcloud compute scp --scp-flag=-q  --recurse ${local_tls_dir} ${peer_instance}:${REMOTE_PEER_TLS_DIR} --zone=${peer_zone} --quiet &
 
   done
 
@@ -237,12 +237,8 @@ function networkUp() {
       local orderer_zone=${ORDERER_ZONES[$i]}
       local orderer_dns_name=${ORDERER_DNS_NAMES[$i]}
 
-      which dos2unix
-      if [ "$?" -ne 0 ]; then
-        fatalln "dos2unix tool not found. exiting"
-      fi
-      # See below question on why using dos2unix: https://stackoverflow.com/questions/70986450/later-chars-displaces-previous-chars-in-string-concat-and-output
-      local instance_home_dir=$(gcloud compute ssh  ${orderer_instance} --zone ${orderer_zone}  -- 'echo ${HOME}' | dos2unix) # use single quote to avoid var substitution locally. 
+      # See my posted question on why using tr -d '\r': https://stackoverflow.com/questions/70986450/later-chars-displaces-previous-chars-in-string-concat-and-output
+      local instance_home_dir=$(gcloud compute ssh  ${orderer_instance} --zone ${orderer_zone}  -- 'echo ${HOME}' | tr -d '\r') # use single quote to avoid var substitution locally. 
 
       # File paths in parameters must be in the absolute form, except $FABRIC_CFG_PATH
       # Otherwise, in the relative form, orderer assumes they are relative to $FABRIC_CFG_PATH
@@ -284,11 +280,7 @@ function networkUp() {
       local peer_dns_name=${PEER_DNS_NAMES[$i]}
       local org_dns_name=${ORG_DNS_NAMES[$i]}
 
-      which dos2unix
-      if [ "$?" -ne 0 ]; then
-        fatalln "dos2unix tool not found. exiting"
-      fi
-      local instance_home_dir=$(gcloud compute ssh  ${peer_instance} --zone ${peer_zone}  -- 'echo ${HOME}' | dos2unix) # use single quote to avoid var substitution locally. 
+      local instance_home_dir=$(gcloud compute ssh  ${peer_instance} --zone ${peer_zone}  -- 'echo ${HOME}' | tr -d '\r') # use single quote to avoid var substitution locally. 
 
       local cmd="
         FABRIC_CFG_PATH=${REMOTE_FABRIC_CFG_PATH}
