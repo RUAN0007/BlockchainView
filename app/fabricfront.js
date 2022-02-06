@@ -27,9 +27,14 @@ class FabricFront {
 
         // Wait for the peer in the org commits this transaction
         let op = DefaultEventHandlerStrategies.MSPID_SCOPE_ALLFORTX;
+        let fabric_in_docker = false;
+        if (process.env.FABRIC_IN_DOCKER) {
+            fabric_in_docker = true;
+        }
         this.gateway_option = {
             identity:x509Identity ,
-            discovery: { enabled: true, asLocalhost: true},
+            // According to https://hyperledger.github.io/fabric-sdk-node/release-1.4/module-fabric-network.Gateway.html, asLocalhost is set to true only when fabric runs in docker.  
+            discovery: {asLocalhost: fabric_in_docker},
             eventHandlerOptions: {
                 strategy: op 
             }  

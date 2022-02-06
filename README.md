@@ -104,7 +104,7 @@ Example usage:
 # To spin up the network
 ./network.sh up
 
-# CHANNEL_NAME="viewchannel"
+CHANNEL_NAME="viewchannel"
 ./network.sh createChannel -c ${CHANNEL_NAME}
 
 # To turn off
@@ -142,7 +142,7 @@ function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$
 
 ENDORSE_POLICY="OR($(join_by , $ALL_ORG))" # Result into "OR(Org1MSP.peer,Org2MSP.peer)"
 
-./network.sh deployCC -c ${CHANNEL} -ccl go -ccn ${CC_NAME} -ccp ../chaincodes/${CC_NAME} -ccep ${ENDORSE_POLICY} -cccg ../chaincodes/${CC_NAME}/collection_config.json
+./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${CC_NAME} -ccp ../chaincodes/${CC_NAME} -ccep ${ENDORSE_POLICY} -cccg ../chaincodes/${CC_NAME}/collection_config.json
 ```
 ## [app/](app/)
 The directory contains NodeJS codes that implement the access-controlled views on blockchains. They are : 

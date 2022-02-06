@@ -5,41 +5,26 @@ function one_line_pem {
 }
 
 function json_ccp {
-    local PP=$(one_line_pem $4)
-    local CP=$(one_line_pem $5)
+    local PP=$(one_line_pem $5)
     sed -e "s/\${ORG}/$1/" \
-        -e "s/\${P0PORT}/$2/" \
-        -e "s/\${CAPORT}/$3/" \
-        -e "s#\${PEERPEM}#$PP#" \
-        -e "s#\${CAPEM}#$CP#" \
+        -e "s#\${ORG_MSP}#$2#" \
+        -e "s#\${PEER_DOMAIN}#$3#" \
+        -e "s#\${ORG_DOMAIN}#$4#" \
+        -e "s#\${PEER_PEM}#$PP#" \
         organizations/ccp-template.json
 }
 
-function yaml_ccp {
-    local PP=$(one_line_pem $4)
-    local CP=$(one_line_pem $5)
-    sed -e "s/\${ORG}/$1/" \
-        -e "s/\${P0PORT}/$2/" \
-        -e "s/\${CAPORT}/$3/" \
-        -e "s#\${PEERPEM}#$PP#" \
-        -e "s#\${CAPEM}#$CP#" \
-        organizations/ccp-template.yaml | sed -e $'s/\\\\n/\\\n          /g'
-}
 
-ORG=1
-P0PORT=7051
-CAPORT=7054
-PEERPEM=organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-CAPEM=organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+. env.sh
+peer_count=${#PEER_INSTANCES[@]}
+for i in $(seq 0 $((peer_count-1)))
+do
+    org=$((i+1))
+    org_msp="${ORG_MSPS[$i]}"
+    peer_domain="${PEER_DNS_NAMES[$i]}"
+    org_domain="${ORG_DNS_NAMES[$i]}"
+    peer_pem_path="organizations/peerOrganizations/${org_domain}/tlsca/tlsca.${org_domain}-cert.pem"
+    # ca_pem_path="organizations/peerOrganizations/${org_domain}/ca/ca.${org_domain}-cert.pem"
+    echo "$(json_ccp ${org} ${org_msp} ${peer_domain} ${org_domain} ${peer_pem_path})" > organizations/peerOrganizations/${org_domain}/connection-org${org}.json
+done
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/org1.example.com/connection-org1.json
-echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/org1.example.com/connection-org1.yaml
-
-ORG=2
-P0PORT=9051
-CAPORT=8054
-PEERPEM=organizations/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
-CAPEM=organizations/peerOrganizations/org2.example.com/ca/ca.org2.example.com-cert.pem
-
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/org2.example.com/connection-org2.json
-echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > organizations/peerOrganizations/org2.example.com/connection-org2.yaml

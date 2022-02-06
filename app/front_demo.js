@@ -10,11 +10,12 @@ const CC_FUNC="InvokeTxn";
 const CC_ARGS=["1", "2"]; 
 
 Promise.resolve().then(()=>{
-    const profile_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');;
+    const network_dir="gcp-network";
+    // const network_dir="test-network";
+    const profile_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
     const mspId = "Org1MSP";
-    const cert_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
-    const key_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', `org1.example.com`, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
-
+    const cert_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', 'org1.example.com', "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
+    const key_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', `org1.example.com`, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
     FRONT = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
     return FRONT.InitNetwork();
 }).then(()=>{

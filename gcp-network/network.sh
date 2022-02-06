@@ -309,7 +309,6 @@ function networkUp() {
       # replace line breaks in cmd with spaces
       gcloud compute ssh  --zone ${peer_zone} ${peer_instance} -- "$(echo "$cmd" | tr '\n' ' ')" &
   done
-  infoln "Wait for 30s for Fabric processes to fully launch..."
 }
 
 

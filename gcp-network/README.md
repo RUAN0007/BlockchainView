@@ -16,35 +16,59 @@ gcloud beta compute instances create fabriccli \
 - `gcloud auth login`
 - add ssh key to github
 - download this repo
-- download golang
+- install golang
 - download fabric binaries and dockers
+- `sudo apt-get install build-essential`
 - download node and npm
 ```
 
-# Per-experimental-set
+# Before: Per-experimental-set
 ```
 
 gcloud compute instances start fabriccli --zone=asia-southeast1-a
 gcloud compute ssh fabriccli --zone=asia-southeast1-a
-```
 
-# Per-experiment
-```
 # in fabriccli
 ./gcp.sh instance_up
+```
 
+# Before: Per-experiment
+```
 ./network.sh up
-./network.sh createChannel
+
+CHANNEL_NAME="viewchannel"
+./network.sh createChannel -c ${CHANNEL_NAME}
+
+
+CC_NAME="secretcontract" # Can also be txncoordinator, privateonly, ..., etc.
+
+PEER_COUNT=2
+ALL_ORG=""
+for i in $(seq ${PEER_COUNT})
+do
+   ALL_ORG="$ALL_ORG 'Org${i}MSP.peer'"
+done
+
+function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$d}"; }
+
+ENDORSE_POLICY="OR($(join_by , $ALL_ORG))" # Result into "OR(Org1MSP.peer,Org2MSP.peer)"
+
+./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${CC_NAME} -ccp ../chaincodes/${CC_NAME} -ccep ${ENDORSE_POLICY} -cccg ../chaincodes/${CC_NAME}/collection_config.json
+
+
 
 ```
 
 
+# End: Per-experimental-set
+gcloud compute instances stop fabriccli
 
-
+```
+# in fabriccli
+./gcp.sh instance_down
 
 gcloud compute instances stop fabriccli
 
-./gcp.sh instance_down
 ```
 
 

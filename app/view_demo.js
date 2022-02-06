@@ -9,7 +9,6 @@ const FabricFront = require("./fabricfront").FabricFront;
 const EncryptionBasedViewMgr = require("./encryption_based_view_mgr").EncryptionBasedViewMgr;
 const HashBasedViewMgr = require("./hash_based_view_mgr").HashBasedViewMgr;
 const PlainViewMgr = require("./plain_view_mgr").PlainViewMgr;
-const PlainDataNoView = require("./plain_no_view").PlainDataNoView;
 const global = require('./global.js');
 
 const LOGGER = require('loglevel');
@@ -46,10 +45,12 @@ var USER_INPUT;
 /////////////////////////////////////////////////////////////
 // Below are expected to execute at the U1 side, who invokes the transaction and creates the view. 
 Promise.resolve().then(()=>{
-    const profile_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');;
+    const network_dir="gcp-network";
+    // const network_dir="test-network";
+    const profile_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', 'org1.example.com', 'connection-org1.json');
     const mspId = "Org1MSP";
-    const cert_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com', "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
-    const key_path = path.resolve(__dirname, '..', 'test-network', 'organizations', 'peerOrganizations', `org1.example.com`, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
+    const cert_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', 'org1.example.com', "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
+    const key_path = path.resolve(__dirname, '..', network_dir, 'organizations', 'peerOrganizations', `org1.example.com`, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
     var fabric_front = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
     return fabric_front.InitNetwork();
 }).then((fabric_front)=>{
@@ -63,7 +64,7 @@ Promise.resolve().then(()=>{
 
     // const view_mode = global.IrrevocableMode
     // WORKLOAD_CHAINCODEID = "secretcontract";
-    // const viewstorage_contractID = "viewstorage"; // only used in irrevocable mode
+    const viewstorage_contractID = "viewstorage"; // only used in irrevocable mode
 // ================================================================
     VIEW_MGR = new EncryptionBasedViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID, viewstorage_contractID);
 
@@ -75,9 +76,6 @@ Promise.resolve().then(()=>{
     // VIEW_MGR = new PlainViewMgr(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
 
 // ================================================================
-
-    // WORKLOAD_CHAINCODEID = "privateonly";
-    // VIEW_MGR = new PlainDataNoView(fabric_front, view_mode, WORKLOAD_CHAINCODEID);
 /////////////////////////////////////////////////////////////////////
 
     LOGGER.info("===============================================");
