@@ -1,4 +1,4 @@
-export PEER_ZONES=( "asia-east1-a" "europe-north1-a" "northamerica-northeast1-a" )
+export PEER_ZONES=( "europe-north1-a" "northamerica-northeast1-a" )
 export ORDERER_ZONES=( "asia-southeast1-a" "asia-southeast1-a" "asia-southeast1-a" ) # All in SG
 export MACHINE_TYPE="e2-standard-2"
 export GCP_NETWORK="mynetwork"
@@ -15,17 +15,15 @@ export ORG_DNS_NAMES=( "org1.${DNS_SUFFIX}" "org2.${DNS_SUFFIX}" )
 export ORG_MSPS=( "Org1MSP" "Org2MSP" )
 export PEER_DNS_NAMES=( "peer0.org1.${DNS_SUFFIX}" "peer0.org2.${DNS_SUFFIX}" )
 
-export ORDERER_INSTANCES=( "orderer" )
-export ORDERER_DNS_NAMES=( "orderer.${DNS_SUFFIX}" )
-# export ORDERER_INSTANCES=( "orderer1" "orderer2" "orderer3" )
-# export ORDERER_DNS_NAMES=("orderer1.${DNS_SUFFIX}" "orderer2.${DNS_SUFFIX}" "orderer3.${DNS_SUFFIX}")
+export ORDERER_INSTANCES=( "orderer0" "orderer1" "orderer2" )
+export ORDERER_DNS_NAMES=("orderer0.${DNS_SUFFIX}" "orderer1.${DNS_SUFFIX}" "orderer2.${DNS_SUFFIX}")
 
 export PEER_INTERNAL_IP_PATH="./peer_internal_ip"
 export ORDERER_INTERNAL_IP_PATH="./orderer_internal_ip"
 export PEER_EXTERNAL_IP_PATH="./peer_external_ip"
 export ORDERER_EXTERNAL_IP_PATH="./orderer_external_ip"
 
-export FABRIC_ENV_IMAGE="fabricenv" # a pre-built GCP image with docker, docker-compose, fabric-related binaries and docker images. 
+export FABRIC_ENV_IMAGE="fabricenv" # a pre-built GCP image installed with docker, docker-compose, fabric-related binaries and docker images. 
 
 export LOCAL_GENESIS_BLK="./system-genesis-block/genesis.block"
 

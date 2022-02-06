@@ -40,7 +40,8 @@ CHANNEL_NAME="viewchannel"
 ./network.sh createChannel -c ${CHANNEL_NAME}
 
 
-CC_NAME="secretcontract" # Can also be txncoordinator, privateonly, ..., etc.
+CC_NAME="secretcontract" # To work with view_demo
+CC_NAME="noop" # To work with front_demo
 
 PEER_COUNT=2
 ALL_ORG=""
@@ -54,8 +55,6 @@ function join_by { local d=$1; shift; local f=$1; shift; printf %s "$f" "${@/#/$
 ENDORSE_POLICY="OR($(join_by , $ALL_ORG))" # Result into "OR(Org1MSP.peer,Org2MSP.peer)"
 
 ./network.sh deployCC -c ${CHANNEL_NAME} -ccl go -ccn ${CC_NAME} -ccp ../chaincodes/${CC_NAME} -ccep ${ENDORSE_POLICY} -cccg ../chaincodes/${CC_NAME}/collection_config.json
-
-
 
 ```
 
