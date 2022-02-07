@@ -1,19 +1,20 @@
-export PEER_ZONES=( "europe-north1-a" "northamerica-northeast1-a" )
 export ORDERER_ZONES=( "asia-southeast1-a" "asia-southeast1-a" "asia-southeast1-a" ) # All in SG
 export MACHINE_TYPE="e2-standard-2"
 export GCP_NETWORK="mynetwork"
 export DNS_ZONE="myzone"
 export FIREWALL_RULENAME="myfirewall"
 
-export PEER_INSTANCES=( "peer0org1" "peer0org2" )
+export PEER_ZONES=( "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" )
+export PEER_INSTANCES=( "peer0org1" "peer0org2" "peer0org3" "peer0org4" "peer0org5" "peer0org6" "peer0org7" "peer0org8" "peer0org9" )
 
 # Peer and Orderer DNS Names must match with crypto-config-*.yaml and configtx.yaml
 export DNS_SUFFIX="example.com"
 
-# Below two must be consistent
-export ORG_DNS_NAMES=( "org1.${DNS_SUFFIX}" "org2.${DNS_SUFFIX}" )
-export ORG_MSPS=( "Org1MSP" "Org2MSP" )
-export PEER_DNS_NAMES=( "peer0.org1.${DNS_SUFFIX}" "peer0.org2.${DNS_SUFFIX}" )
+# We may not need to run all 9 peers. 
+# Below three must be consistent
+export ORG_DNS_NAMES=( "org1.${DNS_SUFFIX}" "org2.${DNS_SUFFIX}" "org3.${DNS_SUFFIX}" "org4.${DNS_SUFFIX}" "org5.${DNS_SUFFIX}" "org6.${DNS_SUFFIX}" "org7.${DNS_SUFFIX}" "org8.${DNS_SUFFIX}" "org9.${DNS_SUFFIX}" )
+export ORG_MSPS=( "Org1MSP" "Org2MSP" "Org3MSP" "Org4MSP" "Org5MSP" "Org6MSP" "Org7MSP" "Org8MSP" "Org9MSP" )
+export PEER_DNS_NAMES=( "peer0.org1.${DNS_SUFFIX}" "peer0.org2.${DNS_SUFFIX}" "peer0.org3.${DNS_SUFFIX}" "peer0.org4.${DNS_SUFFIX}" "peer0.org5.${DNS_SUFFIX}" "peer0.org6.${DNS_SUFFIX}" "peer0.org7.${DNS_SUFFIX}" "peer0.org8.${DNS_SUFFIX}" "peer0.org9.${DNS_SUFFIX}" )
 
 export ORDERER_INSTANCES=( "orderer0" "orderer1" "orderer2" )
 export ORDERER_DNS_NAMES=("orderer0.${DNS_SUFFIX}" "orderer1.${DNS_SUFFIX}" "orderer2.${DNS_SUFFIX}")

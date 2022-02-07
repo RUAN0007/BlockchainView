@@ -13,8 +13,11 @@
 # prepending $PWD/../bin to PATH to ensure we are picking up the correct binaries
 # this may be commented out to resolve installed version of tools if desired
 export PATH=${PWD}/../bin:$PATH
-export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=false
+if [ -z "${PEER_COUNT}" ]; then
+  fatalln '$PEER_COUNT not set. exiting the program...'
+fi
+export FABRIC_CFG_PATH=${PWD}/configtx${PEER_COUNT}
 
 . scripts/utils.sh
 . env.sh
@@ -57,25 +60,18 @@ function createOrgs() {
     fi
     infoln "Generating certificates using cryptogen tool"
 
-    infoln "Creating Org1 Identities"
+    for i in $(seq 1 ${PEER_COUNT})
+    do
+      infoln "Creating Org${i} Identities"
+      set -x
+      cryptogen generate --config=./organizations/cryptogen/crypto-config-org${i}.yaml --output="organizations"
+      res=$?
+      { set +x; } 2>/dev/null
+      if [ $res -ne 0 ]; then
+        fatalln "Failed to generate certificates..."
+      fi
+    done
 
-    set -x
-    cryptogen generate --config=./organizations/cryptogen/crypto-config-org1.yaml --output="organizations"
-    res=$?
-    { set +x; } 2>/dev/null
-    if [ $res -ne 0 ]; then
-      fatalln "Failed to generate certificates..."
-    fi
-
-    infoln "Creating Org2 Identities"
-
-    set -x
-    cryptogen generate --config=./organizations/cryptogen/crypto-config-org2.yaml --output="organizations"
-    res=$?
-    { set +x; } 2>/dev/null
-    if [ $res -ne 0 ]; then
-      fatalln "Failed to generate certificates..."
-    fi
 
     infoln "Creating Orderer Org Identities"
 
@@ -86,7 +82,6 @@ function createOrgs() {
     if [ $res -ne 0 ]; then
       fatalln "Failed to generate certificates..."
     fi
-
   fi
 
   # Create crypto material using Fabric CA
@@ -164,8 +159,7 @@ function cleanGcp() {
       gcloud compute ssh --ssh-flag="-t" --zone ${orderer_zone} ${orderer_instance}  --quiet -- "rm -rf ${REMOTE_ORDERER_DIR}" &
   done
 
-  local peer_count=${#PEER_INSTANCES[@]}
-  for i in $(seq 0 $((peer_count-1)))
+  for i in $(seq 0 $((PEER_COUNT-1)))
   do
       local peer_instance=${PEER_INSTANCES[$i]}
       local peer_zone=${PEER_ZONES[$i]}
@@ -184,10 +178,10 @@ function line2space() {
 
 # Bring up the peer and orderer nodes using docker compose.
 function networkUp() {
-  if [ ! -d "organizations/peerOrganizations" ]; then
-    createOrgs
-    createConsortium
-  fi
+  # if [ ! -d "organizations/peerOrganizations" ]; then
+  createOrgs
+  createConsortium
+  # fi
 
   cleanGcp
   infoln "Transfer files to intances."
@@ -209,8 +203,7 @@ function networkUp() {
       gcloud compute scp --scp-flag=-q  --recurse --zone=${orderer_zone} ${local_tls_dir} ${orderer_instance}:${REMOTE_ORDERER_TLS_DIR} --zone=${orderer_zone} --quiet &
   done
 
-  local peer_count=${#PEER_INSTANCES[@]}
-  for i in $(seq 0 $((peer_count-1)))
+  for i in $(seq 0 $((PEER_COUNT-1)))
   do
       local peer_instance=${PEER_INSTANCES[$i]}
       local peer_zone=${PEER_ZONES[$i]}
@@ -271,8 +264,7 @@ function networkUp() {
   done
 
 
-  local peer_count=${#PEER_INSTANCES[@]}
-  for i in $(seq 0 $((peer_count-1)))
+  for i in $(seq 0 $((PEER_COUNT-1)))
   do
 
       local peer_instance=${PEER_INSTANCES[$i]}
@@ -326,8 +318,7 @@ function networkDown() {
       gcloud compute ssh --ssh-flag="-t" --zone ${orderer_zone} ${orderer_instance} -- "${cmd}" > /dev/null 2>&1 &
   done
 
-  local peer_count=${#PEER_INSTANCES[@]}
-  for i in $(seq 0 $((peer_count-1)))
+  for i in $(seq 0 $((PEER_COUNT-1)))
   do
       local peer_instance=${PEER_INSTANCES[$i]}
       local peer_zone=${PEER_ZONES[$i]}
@@ -368,6 +359,7 @@ function deployCC() {
     fatalln "Deploying chaincode failed"
   fi
 }
+
 
 # Obtain the OS and Architecture string that will be used to select the correct
 # native binaries for your platform, e.g., darwin-amd64 or linux-amd64

@@ -39,14 +39,14 @@ function gcp_instance_up() {
     --networks=${GCP_NETWORK} \
     --visibility=private
 
-    local peer_count=${#PEER_INSTANCES[@]}
-    cecho "GREEN" "Creating ${peer_count} peer instances..."
-    for i in $(seq 0 $((peer_count-1)))
+    cecho "GREEN" "Creating ${PEER_COUNT} peer instances..."
+    for i in $(seq 0 $((PEER_COUNT-1)))
     do
         peer_instance=${PEER_INSTANCES[$i]}
         peer_zone=${PEER_ZONES[$i]}
         cecho "GREEN" "    Launching ${peer_instance} at Zone ${peer_zone}"
-
+        # Stagger requests. Or, gcloud will reject them
+        sleep 1s 
         # For some reason, gcloud beta release must be used for source-machine image flag
         gcloud beta compute instances create ${peer_instance} \
             --zone=${peer_zone} \
@@ -64,6 +64,7 @@ function gcp_instance_up() {
         orderer_zone=${ORDERER_ZONES[$i]}
         cecho "GREEN" "    Launching ${orderer_instance} at Zone ${orderer_zone}"
 
+        sleep 1s 
         # For some reason, gcloud beta release must be used for source-machine image flag
         gcloud beta compute instances create ${orderer_instance} \
             --zone=${orderer_zone} \
@@ -76,16 +77,16 @@ function gcp_instance_up() {
     cecho "GREEN" "Wait for instances to fully launch..."
     wait
 
-    local peer_count=${#PEER_INSTANCES[@]}
     local orderer_count=${#ORDERER_INSTANCES[@]}
     cecho "GREEN" "Start DNS Modfication..."
+    rm -rf transaction.yaml # In case a DNS txn happens in the middle
     gcloud dns record-sets transaction start --zone="${DNS_ZONE}"
 
     echo "Dumping peers' internal ips to ${PEER_INTERNAL_IP_PATH}, and external ips to ${PEER_EXTERNAL_IP_PATH}. And updating their internal ips to DNS..."
     rm -rf ${PEER_INTERNAL_IP_PATH}
     rm -rf ${PEER_EXTERNAL_IP_PATH}
 
-    for i in $(seq 0 $((peer_count-1)))
+    for i in $(seq 0 $((PEER_COUNT-1)))
     do
         peer_instance=${PEER_INSTANCES[$i]}
         peer_zone=${PEER_ZONES[$i]}
@@ -127,8 +128,7 @@ function gcp_instance_down() {
     cecho "GREEN" "Delete instances and remove DNS records..."
     gcloud dns record-sets transaction start --zone="${DNS_ZONE}"
 
-    local peer_count=${#PEER_INSTANCES[@]}
-    for i in $(seq 0 $((peer_count-1)))
+    for i in $(seq 0 $((PEER_COUNT-1)))
     do
         peer_instance=${PEER_INSTANCES[$i]}
         peer_zone=${PEER_ZONES[$i]}
@@ -182,6 +182,10 @@ main() {
        exit 1
     fi
     # pushd ${__SCRIPT_DIR} > /dev/null 2>&1
+
+    if [ -z "${PEER_COUNT}" ]; then
+        fatalln '$PEER_COUNT not set. exiting the program...'
+    fi
 
     if [[ $1 == "network_new" ]]; then
         gcp_network_new

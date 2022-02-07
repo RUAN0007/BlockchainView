@@ -26,7 +26,6 @@ createChannelTx() {
 }
 
 createAnchorTx() {
-	local peer_count=${#PEER_INSTANCES[@]}
 	setPeerGlobals $1
 	configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/${CORE_PEER_LOCALMSPID}_anchors.tx -channelID $CHANNEL_NAME -asOrg ${CORE_PEER_LOCALMSPID}
 }
@@ -96,14 +95,18 @@ setAnchorPeer() {
 	echo
 }
 
-FABRIC_CFG_PATH=${PWD}/configtx
+export FABRIC_CFG_PATH=${PWD}/configtx${PEER_COUNT}
+
+if [ -z "${PEER_COUNT}" ]; then
+  fatalln '$PEER_COUNT not set. exiting the program...'
+fi
+
 
 ## Create channeltx
 infoln "Generating channel create transaction '${CHANNEL_NAME}.tx'"
 createChannelTx
 
-peer_count=${#PEER_INSTANCES[@]}
-for i in $(seq $((peer_count)))
+for i in $(seq $((PEER_COUNT)))
 do
 	infoln "Generating AnchorTx for each Org{$i}"
 	createAnchorTx $i
@@ -119,8 +122,7 @@ createChannel
 successln "Channel '$CHANNEL_NAME' created"
 
 # Join all the peers to the channel
-peer_count=${#PEER_INSTANCES[@]}
-for i in $(seq $((peer_count)))
+for i in $(seq $((PEER_COUNT)))
 do
 	infoln "Joining org${i} peer to the channel..."
 	joinChannel ${i}
@@ -128,8 +130,7 @@ done
 successln "Channel '$CHANNEL_NAME' joined"
 
 ## Set the anchor peers for each org in the channel
-peer_count=${#PEER_INSTANCES[@]}
-for i in $(seq $((peer_count)))
+for i in $(seq $((PEER_COUNT)))
 do
 	infoln "Setting anchor peer for org${i}..."
 	setAnchorPeer ${i}

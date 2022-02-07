@@ -40,10 +40,11 @@ CHANNEL_NAME="viewchannel"
 ./network.sh createChannel -c ${CHANNEL_NAME}
 
 
+PEER_COUNT=2
+
 CC_NAME="secretcontract" # To work with view_demo
 CC_NAME="noop" # To work with front_demo
 
-PEER_COUNT=2
 ALL_ORG=""
 for i in $(seq ${PEER_COUNT})
 do

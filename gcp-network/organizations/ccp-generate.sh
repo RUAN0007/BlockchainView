@@ -16,8 +16,11 @@ function json_ccp {
 
 
 . env.sh
-peer_count=${#PEER_INSTANCES[@]}
-for i in $(seq 0 $((peer_count-1)))
+if [ -z "${PEER_COUNT}" ]; then
+  fatalln '$PEER_COUNT not set. exiting the program...'
+fi
+
+for i in $(seq 0 $((PEER_COUNT-1)))
 do
     org=$((i+1))
     org_msp="${ORG_MSPS[$i]}"

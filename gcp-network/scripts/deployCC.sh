@@ -262,26 +262,39 @@ chaincodeQuery() {
 ## package the chaincode
 packageChaincode
 
-# Install chaincode on peer0.org1 and peer0.org2
-infoln "Installing chaincode on peer0.org1..."
-installChaincode 1
-infoln "Install chaincode on peer0.org2..."
-installChaincode 2
+if [ -z "${PEER_COUNT}" ]; then
+  fatalln '$PEER_COUNT not set. exiting the program...'
+fi
 
-# query whether the chaincode is installed
-queryInstalled 1
 
-# approve the definition for org1
-approveForMyOrg 1
+for i in $(seq $((PEER_COUNT)))
+do
+  infoln "Installing chaincode on peer0.org${i}..."
+  installChaincode $i
+done
 
-## now approve also for org2
-approveForMyOrg 2
+queryInstalled 1 # can not skip, this will set $PACKAGE_ID. 
 
+for i in $(seq $((PEER_COUNT)))
+do
+  infoln "Approving chaincode on peer0.org${i}..."
+  approveForMyOrg $i
+done
+
+
+peer_ids=""
+for i in $(seq $((PEER_COUNT)))
+do
+  peer_ids="${peer_ids} $i"
+done
 ## now that we know for sure both orgs have approved, commit the definition
-commitChaincodeDefinition 1 2
+infoln "Commiting chaincode defintion with [$peer_ids]"
+commitChaincodeDefinition ${peer_ids}
 
-## query on both orgs to see that the definition committed successfully
-queryCommitted 1
-queryCommitted 2
+# for i in $(seq $((PEER_COUNT)))
+# do
+#   infoln "Querying chaincode on peer0.org${i}..."
+#   queryCommitted $i
+# done
 
 exit 0
