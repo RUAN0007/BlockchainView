@@ -184,6 +184,11 @@ Promise.resolve().then(()=>{
                         }
                         let other_logical_view_name = raw_req["views"][ii]["name"];
                         let other_physical_view_name = LOGICAL2PHYSICALVIEWS[other_logical_view_name];
+                        if (typeof other_physical_view_name === 'undefined'){
+                            console.log(`Can not find physical views for ${other_logical_view_name}`);
+                            process.exit(1);
+                         }
+
 
                         if (other_physical_view_name in physicalview2TxnIDs) {
                             var exists = false;

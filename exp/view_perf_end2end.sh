@@ -16,7 +16,6 @@ set -o pipefail
 [[ -n "${__SCRIPT_DIR+x}" ]] || readonly __SCRIPT_DIR="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- $0)"
 
-ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
 PEER_COUNT=2
 
 . env.sh
@@ -24,14 +23,14 @@ PEER_COUNT=2
 SCRIPT_NAME=$(basename $0 .sh)
 
 function network_channel_up() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh up
     ./network.sh createChannel -c ${CHANNEL_NAME}
     popd  > /dev/null 2>&1
 }
 
 function deploy_chaincode() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
     all_org=""
@@ -48,7 +47,7 @@ function deploy_chaincode() {
 }
 
 function network_down() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
 }
@@ -130,24 +129,22 @@ function run_exp() {
 
 # The main function
 main() {
-    if [[ $# < 1 ]]; then 
-       echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: perf_end2end.sh [workload_path] " >&2 
+    if [[ $# < 2 ]]; then 
+       echo "Insufficient arguments, expecting at least 2, actually $#" >&2 
+       echo "    Usage: perf_end2end.sh [workload_path] [client_count]" >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     
     workload_file="$1"
+    client_count=$2
 
-    # for hiding_scheme in "${ENCRYPTION_SCHEME}" ; do
-    #     for view_mode in "${REVOCABLE_MODE}" ; do
-    #         for client_count in 1; do
+    for hiding_scheme in "${ENCRYPTION_SCHEME}" ; do
+        for view_mode in "${REVOCABLE_MODE}" ; do
 
-    for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
-        for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}" ; do
-            for client_count in 1 2 4 8 16 32 ; do
-                run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${client_count}
-            done
+    # for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
+    #     for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}" ; do
+            run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${client_count}
         done
     done
 

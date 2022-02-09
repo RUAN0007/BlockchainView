@@ -11,3 +11,7 @@ export HASH_SCHEME="hash"
 export PLAIN_SCHEME="plain"
 
 export CHANNEL_NAME="viewchannel"
+
+# export network_dir="../test-network"
+export NETWORK_DIR="../gcp-network" 
+export ORG_DIR="${NETWORK_DIR}/organizations/peerOrganizations/org1.example.com"

@@ -16,7 +16,6 @@ set -o pipefail
 [[ -n "${__SCRIPT_DIR+x}" ]] || readonly __SCRIPT_DIR="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- $0)"
 
-ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
 PEER_COUNT=2
 
 . env.sh
@@ -26,7 +25,7 @@ SCRIPT_NAME=$(basename $0 .sh)
 function network_channel_up() {
     echo "We only spin up a single chain. This single chain runs for all views..."
     echo "  Can modify here to spin up multiple chains. "
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh up
     ./network.sh createChannel -c ${CHANNEL_NAME}
     popd  > /dev/null 2>&1
@@ -34,7 +33,7 @@ function network_channel_up() {
 
 function deploy_chaincode() {
     echo "  Again, now we assume a single chain. This function can be edited to deploy chaincodes on multiple chains. "
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
     all_org=""
@@ -52,7 +51,7 @@ function deploy_chaincode() {
 
 function network_down() {
     echo "  Again, now we assume a single chain. This function can be eidted to turn down multiple chains. "
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
 }
@@ -70,6 +69,12 @@ function run_exp() {
     log_dir="log/$(date +%d-%m)"
     mkdir -p ${log_dir}
     mkdir -p ${result_dir}
+    ORG_DIRS=""
+    for i in $(seq ${view_count}) 
+    do
+        # We use a single chain to simulate multiple chains. 
+        ORG_DIRS="${ORG_DIRS} ${ORG_DIR}"
+    done
 
     echo "========================================================="
     echo "Start launching ${client_count} client processes."
@@ -79,7 +84,7 @@ function run_exp() {
         echo "    Client ${i} log at ${log_file}"
         view_count=0 # 0 implies the number of physial views is set to equal to logical views as specified in the workload. 
 
-        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIR} > ${log_file} 2>&1 &
+        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIRS} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
@@ -119,18 +124,17 @@ function run_exp() {
 
 # The main function
 main() {
-    if [[ $# < 1 ]]; then 
-       echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: $0 [workload_path] " >&2 
+    if [[ $# < 2 ]]; then 
+       echo "Insufficient arguments, expecting at least 2, actually $#" >&2 
+       echo "    Usage: $0 [workload_path] [client_count]" >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     
     workload_file="$1"
+    client_count=$2
 
-    for client_count in 1 2 4 8 16 32 ; do
-        run_exp ${workload_file} ${client_count}
-    done
+    run_exp ${workload_file} ${client_count}
 
     popd > /dev/null 2>&1
 }

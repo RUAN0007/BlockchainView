@@ -72,6 +72,13 @@ function run_exp() {
     mkdir -p ${log_dir}
     mkdir -p ${result_dir}
 
+    ORG_DIRS=()
+    for i in $(seq ${view_count}) 
+    do
+        # We use a single chain to simulate multiple chains. 
+        ORG_DIRS+=(${ORG_DIR})
+    done
+
     echo "========================================================="
     echo "Start launching ${client_count} client processes. # of views : ${view_count}."
     for i in $(seq ${client_count}) 
@@ -79,7 +86,7 @@ function run_exp() {
         log_file="${log_dir}/${SCRIPT_NAME}_$(basename ${workload_file} .json)_${view_count}views_${i}.log"
         echo "    Client ${i} log at ${log_file}"
 
-        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIR} > ${log_file} 2>&1 &
+        node supplychain_2pc.js ${workload_file} ${view_count} ${CHANNEL_NAME} ${ORG_DIRS[@]} > ${log_file} 2>&1 &
     done
 
     echo "Wait for finishing client processes"
@@ -90,7 +97,15 @@ function run_exp() {
     echo "=========================================================="
     echo "Here we assume a single chain. May modify here to sum up the ledger size of all chains when employing multiple chains."
     echo "Ledger Storage results " | tee ${result_file}
-    node ledger_storage.js ${ORG_DIR} ${CHANNEL_NAME} | tee -a ${result_file}
+
+    for i in $(seq ${view_count}) 
+    do
+        ORG_ID=$((i-1))
+        echo "  Chain ${ORG_ID}: " | tee -a ${result_file}
+        node ledger_storage.js ${ORG_DIRS[${ORG_ID}]} ${CHANNEL_NAME} | tee -a ${result_file}
+        echo "" | tee -a ${result_file}
+    done
+
     echo "=========================================================="
 
     network_down
