@@ -1,5 +1,5 @@
 export ORDERER_ZONES=( "asia-southeast1-a" "asia-southeast1-a" "asia-southeast1-a" ) # All in SG
-export MACHINE_TYPE="e2-standard-2"
+export MACHINE_TYPE="e2-standard-4"
 export GCP_NETWORK="mynetwork"
 export DNS_ZONE="myzone"
 export FIREWALL_RULENAME="myfirewall"
