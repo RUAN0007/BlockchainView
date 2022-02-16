@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const FabricFront = require("../app/fabricfront").FabricFront;
+const MockFabricFront = require("../app/fabricfront").MockFabricFront;
 const TwoPhaseTxnMgr = require("./two_phase_mgr").TwoPhaseTxnMgr;
 const LEDGER_SIZE_FIELD = require("../app/fabricfront").LEDGER_SIZE_FIELD;
 
@@ -70,12 +71,24 @@ Promise.resolve().then(()=>{
     var view2chain = {};
     for (var i = 0; i < PHYSICAL_VIEW_COUNT; i++) {
         var org_dir = ORG_DIRS[i % ORG_DIRS.length];
-        const profile_path = path.resolve(org_dir, 'connection-org1.json');;
-        const mspId = "Org1MSP";
-        const cert_path = path.resolve(org_dir, "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
-        const key_path = path.resolve(org_dir, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
+        if (org_dir === "Mock") {
+            view2chain[get_physical_view_name(i)] = new MockFabricFront();
+        } else {
+            var peer_count = 1;
+            if (process.env.PEER_COUNT) {
+                peer_count = parseInt(process.env.PEER_COUNT);
+            } else {
+                LOGGER.error("Not setting global env var PEER_COUNT");
+                process.exit(1);
+            }
+            var org_id = 1 + i % peer_count;
+            const profile_path = path.resolve(org_dir, `org${org_id}.example.com`, `connection-org${org_id}.json`);
+            const mspId = `Org${org_id}MSP`;
+            const cert_path = path.resolve(org_dir, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "signcerts", `Admin@org${org_id}.example.com-cert.pem`);
+            const key_path = path.resolve(org_dir, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "keystore", "priv_sk");
 
-        view2chain[get_physical_view_name(i)] = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
+            view2chain[get_physical_view_name(i)] = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
+        }
     }
     let two_phase_mgr = new TwoPhaseTxnMgr(TWO_PC_CHAINCODEID, view2chain);
     return two_phase_mgr.InitNetworks();

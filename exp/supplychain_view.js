@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const util = require('util');
 
 const FabricFront = require("../app/fabricfront").FabricFront;
 const MockFabricFront = require("../app/fabricfront").MockFabricFront;
@@ -46,6 +47,7 @@ var REQID2TXNID = {}; // mapping from application requestID to blockchain transa
 var TOTAL_REQ_COUNT = 0;
 var BATCH_ID = 0;
 var BATCH_EXEC_DELAY = 0;
+var TOTAL_ELAPSED = 0;
 
 const CONFIDENTIAL_DATA = "SECRET_PAYLOAD";
 const WL_FUNC_NAME = "InvokeTxn"; // consistent to onchainview, secretcontract, noop, privateonchainview, privateonly contracts 
@@ -80,10 +82,19 @@ Promise.resolve().then(()=>{
     if (VIEW_MODE === global.MockFabricMode) {
         fabric_front = new MockFabricFront();
     } else {
-        const profile_path = path.resolve(ORG_DIR, 'connection-org1.json');;
-        const mspId = "Org1MSP";
-        const cert_path = path.resolve(ORG_DIR, "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
-        const key_path = path.resolve(ORG_DIR, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
+        var peer_count = 1;
+        if (process.env.PEER_COUNT) {
+            peer_count = parseInt(process.env.PEER_COUNT);
+        } else {
+            LOGGER.error("Not setting global env var PEER_COUNT");
+            process.exit(1);
+        }
+        var org_id = 1 + parseInt(process.pid) % peer_count;
+        LOGGER.info(`Using ORG ${org_id}: `);
+        const profile_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, `connection-org${org_id}.json`);
+        const mspId = `Org${org_id}MSP`;
+        const cert_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "signcerts", `Admin@org${org_id}.example.com-cert.pem`);
+        const key_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "keystore", "priv_sk");
         fabric_front = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
     }
     return fabric_front.InitNetwork();
@@ -227,17 +238,17 @@ Promise.resolve().then(()=>{
         });
     });
 }).then(() => {
-    return FABRIC_FRONT.ScanLedgerForDelayStorage();
-}).then((ledger_info) => {
+    TOTAL_ELAPSED = new Date() - EXEC_START;
+//     return FABRIC_FRONT.ScanLedgerForDelayStorage();
+// }).then((ledger_info) => {
 
-    var ledger_size = ledger_info[LEDGER_SIZE_FIELD];
-    LOGGER.info(`Ledger Size (Bytes): ${ledger_size}`);
+//     var ledger_size = ledger_info[LEDGER_SIZE_FIELD];
+//     LOGGER.info(`Ledger Size (Bytes): ${ledger_size}`);
 }).catch((err)=>{
     LOGGER.error("Invocation fails with err msg: " + err.stack);
 }).finally(()=>{
-    let elapsed = new Date() - EXEC_START;
     let avg_batch_delay = Math.floor(BATCH_EXEC_DELAY / BATCH_ID);
-    LOGGER.info(`Total Duration (ms): ${elapsed} ,  # of app txn:  ${TOTAL_REQ_COUNT} , Committed Txn Count: ${COMMITTED_TXN_COUNT} , avg batch delay (ms): ${avg_batch_delay} # of batches ${BATCH_ID}`);    
+    LOGGER.info(`Total Duration (ms): ${TOTAL_ELAPSED} ,  # of app txn:  ${TOTAL_REQ_COUNT} , Committed Txn Count: ${COMMITTED_TXN_COUNT} , avg batch delay (ms): ${avg_batch_delay} # of batches ${BATCH_ID}`);    
 
     process.exit(0)
 })

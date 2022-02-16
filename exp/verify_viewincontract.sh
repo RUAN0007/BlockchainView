@@ -16,21 +16,21 @@ set -o pipefail
 [[ -n "${__SCRIPT_DIR+x}" ]] || readonly __SCRIPT_DIR="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- $0)"
 
-ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
-PEER_COUNT=2
-
 . env.sh
 SCRIPT_NAME=$(basename $0 .sh)
 
 function network_channel_up() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh up
+    wait_period=5s
+    echo "Wait for ${wait_period} for the system fully up"
+    sleep ${wait_period}
     ./network.sh createChannel -c ${CHANNEL_NAME}
     popd  > /dev/null 2>&1
 }
 
 function deploy_chaincode() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     chaincode_name="$1"
     all_org=""
     for i in $(seq ${PEER_COUNT})
@@ -46,7 +46,7 @@ function deploy_chaincode() {
 }
 
 function network_down() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd ${NETWORK_DIR} > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
 }
@@ -78,7 +78,12 @@ function run_exp() {
 
     echo "---------------------------------------------------------"
     echo "Verification Delay from a client: " | tee ${result_file}
-    tail -2 ${log_file} | tee -a ${result_file}
+
+    echo "Verifying Soundness: " | tee -a ${result_file} 
+    tail -2 ${log_file} | head -1 | tee -a ${result_file}
+    echo "" | tee -a ${result_file}
+    echo "Verifying Completeness: " | tee -a ${result_file} 
+    tail -1 ${log_file} | tee -a ${result_file}
     echo "========================================================="
 
     network_down
@@ -95,6 +100,7 @@ main() {
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
     scanned_txn_per_batch=50
     for hiding_scheme in "${ENCRYPTION_SCHEME}"  ; do
+        # for txn_count in 400 600 800 1000 ; do
         for txn_count in 200 400 600 800 1000 ; do
             run_exp ${hiding_scheme} ${txn_count} ${scanned_txn_per_batch}
         done

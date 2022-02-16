@@ -5,6 +5,10 @@ export DNS_ZONE="myzone"
 export FIREWALL_RULENAME="myfirewall"
 
 export PEER_ZONES=( "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" "europe-north1-a" "northamerica-northeast1-a" )
+
+# All nodes in the same sg region. 
+# export PEER_ZONES=( "asia-southeast1-a"  "asia-southeast1-a" "asia-southeast1-a" "asia-southeast1-a" )
+
 export PEER_INSTANCES=( "peer0org1" "peer0org2" "peer0org3" "peer0org4" "peer0org5" "peer0org6" "peer0org7" "peer0org8" "peer0org9" )
 
 # Peer and Orderer DNS Names must match with crypto-config-*.yaml and configtx.yaml

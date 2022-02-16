@@ -14,4 +14,5 @@ export CHANNEL_NAME="viewchannel"
 
 # export network_dir="../test-network"
 export NETWORK_DIR="../gcp-network" 
-export ORG_DIR="${NETWORK_DIR}/organizations/peerOrganizations/org1.example.com"
+export ORG_DIR="${NETWORK_DIR}/organizations/peerOrganizations"
+export MAX_CLI_RUNNING_TIME=200s

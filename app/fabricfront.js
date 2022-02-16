@@ -113,15 +113,48 @@ class FabricFront {
         return BlockDecoder.decodeTransaction(txn_bytes);
     }
 
+    async BatchQueryLedgerStorage() {
+        var total_storage = 0;
+        var chain_height = await this.GetLedgerHeight();
+        console.log(`Chain height = ${chain_height}`);
+
+        var num_of_blk_per_batch = 10;
+        console.log(`Block Querying the chain with batch size ${num_of_blk_per_batch}...`);
+        var batch_count = chain_height / num_of_blk_per_batch;
+        var blk_id = 0;
+        for (var i = 0 ; i <= batch_count; i++) {
+            let blk_query_promises = [];
+            console.log(`  Pulling for ${num_of_blk_per_batch} blocks from height ${blk_id} `);
+            for (var j = 0 ; j < num_of_blk_per_batch ; j++) {
+                blk_id+=1;
+                if (blk_id < chain_height) {
+                    blk_query_promises.push(this.Query('qscc', 'GetBlockByNumber', [this.channel_name, String(blk_id)]).then((result_bytes)=>{
+                        total_storage+=result_bytes.length;
+                    }));
+                }
+            }
+            await Promise.all(blk_query_promises);
+        }
+        var result = {};
+        result[LEDGER_SIZE_FIELD] = total_storage;
+        result[LEDGER_HEIGHT_FIELD] = chain_height;
+
+        return result;
+    }
+
     async ScanLedgerForDelayStorage() {
 
         var total_query_ms = 0;
         var total_verification_ms = 0;
         var total_storage = 0;
+        console.log(`Querying chain height...`);
         var chain_height = await this.GetLedgerHeight();
-
+        console.log(`Chain height = ${chain_height}`);
         for (var blk_height = 0; blk_height < chain_height; blk_height++) {
                 let start_query = new Date();
+                if (blk_height % 10 == 0) {
+                    console.log(`Pulling block ${blk_height}...`);
+                }
                 const result_bytes = await this.Query('qscc', 'GetBlockByNumber', [this.channel_name, String(blk_height)] );
                 // LOGGER.info(`Pull block ${blk_height} with ${result_bytes.length} bytes`);
                 total_storage += result_bytes.length;

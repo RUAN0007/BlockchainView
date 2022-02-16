@@ -66,10 +66,20 @@ function build_pub_arg(selectivity) {
 /////////////////////////////////////////////////////////////
 Promise.resolve().then(()=>{
     var fabric_front;
-    const profile_path = path.resolve(ORG_DIR, 'connection-org1.json');;
-    const mspId = "Org1MSP";
-    const cert_path = path.resolve(ORG_DIR, "users", `Admin@org1.example.com`, "msp", "signcerts", `Admin@org1.example.com-cert.pem`);
-    const key_path = path.resolve(ORG_DIR, "users", `Admin@org1.example.com`, "msp", "keystore", "priv_sk");
+    var peer_count = 1;
+    if (process.env.PEER_COUNT) {
+        peer_count = parseInt(process.env.PEER_COUNT);
+    } else {
+        LOGGER.error("Not setting global env var PEER_COUNT");
+        process.exit(1);
+    }
+    
+    var org_id = 1 + parseInt(process.pid) % peer_count;
+    LOGGER.info(`Using ORG ${org_id}: `);
+    const profile_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, `connection-org${org_id}.json`);
+    const mspId = `Org${org_id}MSP`;
+    const cert_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "signcerts", `Admin@org${org_id}.example.com-cert.pem`);
+    const key_path = path.resolve(ORG_DIR, `org${org_id}.example.com`, "users", `Admin@org${org_id}.example.com`, "msp", "keystore", "priv_sk");
     fabric_front = new FabricFront(profile_path, CHANNEL_NAME, mspId, cert_path, key_path);
     return fabric_front.InitNetwork();
 

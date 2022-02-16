@@ -16,20 +16,21 @@ set -o pipefail
 [[ -n "${__SCRIPT_DIR+x}" ]] || readonly __SCRIPT_DIR="$(cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 [[ -n "${__SCRIPT_NAME+x}" ]] || readonly __SCRIPT_NAME="$(basename -- $0)"
 
-ORG_DIR="../test-network/organizations/peerOrganizations/org1.example.com"
 PEER_COUNT=2
 
 . env.sh
 
 function network_channel_up() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd "${NETWORK_DIR}" > /dev/null 2>&1
     ./network.sh up
+    echo "Wait for 5s for the network is fully up. "
+    sleep 5s
     ./network.sh createChannel -c ${CHANNEL_NAME}
     popd  > /dev/null 2>&1
 }
 
 function deploy_chaincode() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd "${NETWORK_DIR}" > /dev/null 2>&1
     chaincode_name="$1"
     peer_count=$2
     all_org=""
@@ -46,7 +47,7 @@ function deploy_chaincode() {
 }
 
 function network_down() {
-    pushd ../test-network > /dev/null 2>&1
+    pushd "${NETWORK_DIR}" > /dev/null 2>&1
     ./network.sh down
     popd  > /dev/null 2>&1
 }
@@ -56,7 +57,7 @@ function run_exp() {
     hiding_scheme="$2"
     view_mode="$3"
     view_count=$4
-    client_count=32
+    client_count=4
 
     network_channel_up
 
@@ -88,15 +89,15 @@ function run_exp() {
     do
         log_file="${log_dir}/storage_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${view_count}views_${i}.log"
         echo "    Client ${i} log at ${log_file}"
-        node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} ${view_count} > ${log_file} 2>&1 &
+        (timeout ${MAX_CLI_RUNNING_TIME} node supplychain_view.js ${ORG_DIR} ${workload_file} ${hiding_scheme} ${view_mode} ${CHANNEL_NAME} ${workload_chaincodeID} ${view_count} > ${log_file}  2>&1 ; exit 0) & 
     done
 
-    echo "Wait for finishing client processes"
+    echo "Wait for at most ${MAX_CLI_RUNNING_TIME} for client processes to finish"
     wait
 
     result_file="${result_dir}/storage_$(basename ${workload_file} .json)_${hiding_scheme}_${view_mode}_${view_count}views"
 
-    echo "Ledger Size: " | tee ${result_file}
+    echo "Ledger Info: " | tee ${result_file}
     node ledger_storage.js ${ORG_DIR} ${CHANNEL_NAME} | tee -a ${result_file}
 
     network_down
@@ -105,18 +106,20 @@ function run_exp() {
 
 # The main function
 main() {
-    if [[ $# < 1 ]]; then 
-       echo "Insufficient arguments, expecting at least 1, actually $#" >&2 
-       echo "    Usage: view_storage.sh [workload_path] " >&2 
+    if [[ $# < 2 ]]; then 
+       echo "Insufficient arguments, expecting at least 2, actually $#" >&2 
+       echo "    Usage: view_storage.sh [workload_path] [view_count] " >&2 
        exit 1
     fi
     pushd ${__SCRIPT_DIR} > /dev/null 2>&1
 
+    workload_file="$1"
+    view_count=$2
+    # for hiding_scheme in "${ENCRYPTION_SCHEME}"  ; do
+    #     for view_mode in "${IRREVOCABLE_MODE}"  ; do
     for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
         for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}" ; do
-            for view_count in 1 4 7 14 ; do
-                run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${view_count}
-            done
+            run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${view_count}
         done
     done
 

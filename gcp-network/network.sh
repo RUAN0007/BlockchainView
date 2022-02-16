@@ -14,13 +14,14 @@
 # this may be commented out to resolve installed version of tools if desired
 export PATH=${PWD}/../bin:$PATH
 export VERBOSE=false
+
+. scripts/utils.sh
+. env.sh
+
 if [ -z "${PEER_COUNT}" ]; then
   fatalln '$PEER_COUNT not set. exiting the program...'
 fi
 export FABRIC_CFG_PATH=${PWD}/configtx${PEER_COUNT}
-
-. scripts/utils.sh
-. env.sh
 
 # Before you can bring up a network, each organization needs to generate the crypto
 # material that will define that organization on the network. Because Hyperledger

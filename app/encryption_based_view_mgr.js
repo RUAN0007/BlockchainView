@@ -56,7 +56,7 @@ class EncryptionBasedViewMgr {
                 return view_name;
             });
         } else if (this.mode === global.ViewInContractMode) {
-            var merge_period_sec = 200;
+            var merge_period_sec = 500;
             return this.fabric_front.InvokeTxn(this.wl_contract_id, "CreateView", [view_name, view_predicate, merge_period_sec]).then(()=>{
                 return view_name;
             });;
