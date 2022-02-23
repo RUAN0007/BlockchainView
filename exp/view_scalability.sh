@@ -151,7 +151,7 @@ main() {
     run_exp ${workload_file} "${PLAIN_SCHEME}" "privateonchainview" ${peer_count}
 
     # Store the plain secret as a transaction's private part, but no view manamgent in contracts. 
-    # run_exp ${workload_file} "${PLAIN_SCHEME}" "privateonly" ${peer_count}
+    run_exp ${workload_file} "${PLAIN_SCHEME}" "privateonly" ${peer_count}
 
     popd > /dev/null 2>&1
 }

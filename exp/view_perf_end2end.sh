@@ -152,10 +152,8 @@ main() {
     workload_file="$1"
     client_count=$2
 
-    for hiding_scheme in "${ENCRYPTION_SCHEME}"  ; do
-    #     for view_mode in "${VIEWINCONTRACT_MODE}" ; do
-    # for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}" ; do
-        for view_mode in "${VIEWINCONTRACT_MODE}" ; do
+    for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}" ; do
+        for view_mode in "${REVOCABLE_MODE}" "${IRREVOCABLE_MODE}" "${VIEWINCONTRACT_MODE}"; do
             run_exp ${workload_file} ${hiding_scheme} ${view_mode} ${client_count}
             echo "Sleep for 10s before the next experiment"
             sleep 10s

@@ -144,8 +144,7 @@ main() {
     view_count=$2
     cli_count=$3
 
-    # for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
-    for hiding_scheme in "${HASH_SCHEME}"  ; do
+    for hiding_scheme in "${ENCRYPTION_SCHEME}" "${HASH_SCHEME}"  ; do
         run_exp ${hiding_scheme} ${view_count} ${selectivity} ${cli_count}
     done
 
