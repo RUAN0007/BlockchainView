@@ -1,3 +1,5 @@
+This branch is DEPRECATED. Previously, it is for the SIGMOD 2021 Research Track submission.
+
 # Directory Intro
 ## Chaincodes
 This directory contains chaincode(smart contract) source codes in golang:
